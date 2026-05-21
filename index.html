@@ -1,0 +1,3864 @@
+<!-- `` -->
+<!DOCTYPE html>
+<!-- NFTi LABS - v5.0.2 -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NFTi LABS — Product Suite v5.0.2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            charcoal:     '#1C2120',
+            'preload-bg': '#1C2120',
+            sage:         '#7E908C',
+            'sage-light': '#A8B8B4',
+            'sage-dark':  '#5C706C',
+            'steel-blue': '#2DA8FF',
+          },
+          fontFamily: {
+            grotesk: ['Space Grotesk', 'sans-serif'],
+            mono:    ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    @font-face {
+      font-family: 'BDSans';
+      src: url('./BDSans-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* ══════════════════════════════════════════
+       GLOBAL — 0px sharp edges, no sound
+    ══════════════════════════════════════════ */
+    *, *::before, *::after {
+      border-radius: 0 !important;
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0; padding: 0;
+      background: #1C2120;
+      font-family: 'Space Grotesk', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+    a, button, [role="button"], select, input, textarea, label, .geo-item {
+      cursor: none !important;
+    }
+    @media (hover: none), (pointer: coarse) {
+      html, body {
+        cursor: auto;
+      }
+      a, button, [role="button"], select, input, textarea, label, .geo-item {
+        cursor: auto !important;
+      }
+      #cursor-block {
+        display: none !important;
+      }
+    }
+
+    /* ══════════════════════════════════════════
+       CUSTOM BLOCKCHAIN CURSOR  (v4.5 steel-blue cube + green hover square)
+    ══════════════════════════════════════════ */
+    #cursor-block {
+      position: fixed;
+      top: 0; left: 0;
+      width: 14px; height: 14px;
+      background: transparent;
+      border: 1.5px solid #2DA8FF;
+      box-shadow: 0 0 0 1px rgba(45,168,255,.8), 0 0 16px rgba(45,168,255,.35);
+      pointer-events: none;
+      z-index: 999999;
+      will-change: transform;
+      transform: translate3d(-200px, -200px, 0);
+      transform-style: preserve-3d;
+      transition: width .12s ease, height .12s ease, background .12s ease, border-color .12s ease, opacity .12s ease, box-shadow .12s ease, transform .08s linear;
+    }
+    #cursor-block .cube-part {
+      position: absolute;
+      display: block;
+      pointer-events: none;
+      box-sizing: border-box;
+    }
+    /* Default state: steel-blue glowing cube */
+    #cursor-block .cube-back {
+      width: 14px; height: 14px;
+      left: 5px; top: -5px;
+      border: 1.5px solid #2DA8FF;
+      box-shadow: 0 0 10px rgba(45,168,255,.25);
+      opacity: .7;
+    }
+    #cursor-block .cube-edge {
+      width: 7px;
+      height: 1.5px;
+      background: #2DA8FF;
+      transform-origin: left center;
+      transform: rotate(-45deg);
+      opacity: .9;
+    }
+    #cursor-block .cube-edge.e1 { left: 0;  top: 0;  }
+    #cursor-block .cube-edge.e2 { left: 14px; top: 0;  }
+    #cursor-block .cube-edge.e3 { left: 0;  top: 14px; }
+    #cursor-block .cube-edge.e4 { left: 14px; top: 14px; }
+    #cursor-block { overflow: visible; }
+
+    /* Hover state: bright-green 2D square on clickable targets */
+    #cursor-block.is-hover {
+      width: 16px; height: 16px;
+      background: transparent;
+      border: 2px solid #39FF7A;
+      box-shadow: 0 0 0 1px rgba(57,255,122,.95), 0 0 18px rgba(57,255,122,.55);
+    }
+    #cursor-block.is-hover .cube-part {
+      display: none;
+    }
+
+    /* ══════════════════════════════════════════
+       PRELOADER — near-black bg
+    ══════════════════════════════════════════ */
+    #preloader {
+      position: fixed; inset: 0;
+      background: #1C2120;
+      z-index: 9999;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 2rem;
+    }
+    #preloader.transitioning { pointer-events: none; }
+
+    .logo-text {
+      font-family: 'BDSans', 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: clamp(3.4rem, 9vw, 7rem);
+      color: #FFFFFF;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      text-shadow:
+        0 0 1px rgba(126,144,140,.28),
+        0 0 8px rgba(126,144,140,.16);
+      filter: none;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+    .logo-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .65rem;
+      color: #FFFFFF;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      margin-top: 5px;
+    }
+
+    /* ── Terminal typewriter ── */
+    #terminal {
+      margin-top: 2.5rem;
+      width: min(540px, 92vw);
+      min-height: 9rem;
+    }
+    .term-line {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem;
+      color: #FFFFFF;
+      line-height: 2.1;
+      /* Lines start invisible; JS reveals + types them */
+      display: none;
+      white-space: pre;          /* preserve spaces for typewriter */
+    }
+    .term-line.active { display: block; }
+    .term-tag  { color: #2DA8FF; font-weight: 500; }
+    .term-line.line-ready { color: #39FF7A; }
+
+    /* Shared inline block cursor (follows typewriter head on active line, blinks on last) */
+    .term-cursor {
+      display: inline-block;
+      width: 7px; height: .82em;
+      background: #7E908C;
+      vertical-align: middle;
+      margin-left: 1px;
+      animation: blink .85s step-end infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ── TOKENIZE button glow wrap ── */
+    .btn-glow-wrap {
+      position: relative;
+      display: inline-block;
+      margin-top: 3rem;
+      /* hidden until JS reveals */
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity .55s ease, transform .55s ease;
+      /* must be clickable once revealed */
+      pointer-events: none;
+    }
+    .btn-glow-wrap.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .btn-glow-halo {
+      position: absolute;
+      inset: -24px -48px;
+      background: radial-gradient(
+        circle at 50% 50%,
+        rgba(126,144,140,.38) 0%,
+        rgba(126,144,140,.22) 30%,
+        rgba(126,144,140,.11) 52%,
+        rgba(126,144,140,.05) 66%,
+        rgba(126,144,140,0) 80%
+      );
+      filter: blur(var(--halo-blur, 14px));
+      opacity: var(--halo-opacity, .16);
+      transform: scale(var(--halo-scale, 1));
+      transition: opacity .08s linear, filter .08s linear, transform .08s linear;
+      pointer-events: none;
+      z-index: -1;
+      will-change: opacity, filter, transform;
+    }
+    #tokenize-btn {
+      padding: .9rem 3.2rem;
+      background: transparent;
+      border: 1px solid #7E908C;
+      color: #7E908C;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: .88rem;
+      letter-spacing: .38em;
+      text-transform: uppercase;
+      transition: background .15s ease, color .15s ease;
+    }
+    #tokenize-btn:hover { background: #7E908C; color: #39FF7A; border-color: #39FF7A; }
+
+    /* ══════════════════════════════════════════
+       GRID-MORPH PIXEL TRANSITION (v4.5)
+    ══════════════════════════════════════════ */
+    #scatter-canvas {
+      position: fixed; inset: 0;
+      z-index: 9998;
+      pointer-events: none;
+      display: none;
+    }
+    /* ══════════════════════════════════════════
+       HERO GRID BG
+    ══════════════════════════════════════════ */
+    .hero-grid-bg {
+      position: relative;
+      overflow: hidden;
+      background-color: #1C2120;
+      background-image:
+        linear-gradient(rgba(126,144,140,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(126,144,140,.08) 1px, transparent 1px),
+        radial-gradient(120% 90% at 18% 26%, rgba(126,144,140,.14) 0%, rgba(126,144,140,0) 62%),
+        radial-gradient(130% 100% at 82% 72%, rgba(126,144,140,.10) 0%, rgba(126,144,140,0) 64%);
+      background-size: 52px 52px, 52px 52px, auto, auto;
+      animation: hero-grid-drift 16s ease-in-out infinite alternate;
+    }
+    .hero-grid-bg::before,
+    .hero-grid-bg::after {
+      content: "";
+      position: absolute;
+      inset: -18%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .hero-grid-bg::before {
+      background:
+        repeating-linear-gradient(
+          -14deg,
+          rgba(126,144,140,.00) 0 18px,
+          rgba(126,144,140,.16) 18px 20px,
+          rgba(126,144,140,.00) 20px 44px
+        ),
+        linear-gradient(100deg, rgba(28,33,32,.00) 0%, rgba(28,33,32,.24) 100%);
+      mix-blend-mode: screen;
+      animation: fabric-wave-a 8.2s cubic-bezier(.45,0,.3,1) infinite alternate;
+      transform-origin: 50% 50%;
+    }
+    .hero-grid-bg::after {
+      background:
+        radial-gradient(48% 30% at 24% 42%, rgba(126,144,140,.24), rgba(126,144,140,0) 74%),
+        radial-gradient(42% 26% at 74% 60%, rgba(126,144,140,.20), rgba(126,144,140,0) 70%);
+      animation: fabric-wave-b 11.8s cubic-bezier(.45,0,.3,1) infinite alternate;
+      opacity: .68;
+    }
+    .hero-grid-bg > * {
+      position: relative;
+      z-index: 1;
+    }
+    @keyframes hero-grid-drift {
+      0% { background-position: 0 0, 0 0, 0% 0%, 0% 0%; }
+      100% { background-position: 34px 17px, -34px -9px, 0% 0%, 0% 0%; }
+    }
+    @keyframes fabric-wave-a {
+      0%   { transform: translate3d(-2.8%, .8%, 0) rotate(-0.55deg) skewY(-0.75deg) scale(1.01); opacity: .30; }
+      25%  { transform: translate3d(-1.2%, -.6%, 0) rotate(0.2deg)  skewY(0.35deg)  scale(1.02); opacity: .44; }
+      50%  { transform: translate3d(.9%, .4%, 0)   rotate(-0.15deg) skewY(-0.25deg) scale(1.03); opacity: .58; }
+      75%  { transform: translate3d(2.1%, -1.1%, 0) rotate(0.35deg) skewY(0.5deg)   scale(1.04); opacity: .48; }
+      100% { transform: translate3d(3.1%, -1.6%, 0) rotate(0.65deg) skewY(0.85deg)  scale(1.045); opacity: .62; }
+    }
+    @keyframes fabric-wave-b {
+      0%   { transform: translate3d(-2.1%, 1.3%, 0) rotate(0deg)      scale(1);    opacity: .42; }
+      30%  { transform: translate3d(-.6%, .1%, 0)  rotate(-0.22deg)   scale(1.03); opacity: .58; }
+      60%  { transform: translate3d(1.2%, -.8%, 0) rotate(0.18deg)    scale(1.06); opacity: .70; }
+      100% { transform: translate3d(2.4%, -1.3%, 0) rotate(0.35deg)   scale(1.08); opacity: .78; }
+    }
+    .scroll-cue {
+      position: absolute;
+      left: 50%;
+      bottom: 1.45rem;
+      transform: translateX(-50%);
+      width: 24px;
+      height: 38px;
+      background: linear-gradient(180deg, rgba(126,144,140,.45), rgba(126,144,140,.05)) center / 1px 26px no-repeat;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .scroll-cue::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 8px;
+      width: 10px;
+      height: 10px;
+      border-right: 1px solid rgba(126,144,140,.85);
+      border-bottom: 1px solid rgba(126,144,140,.85);
+      transform: translateX(-50%) rotate(45deg);
+      animation: scroll-cue-chevron-a 1.45s ease-in-out infinite;
+    }
+    .scroll-cue::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 18px;
+      width: 10px;
+      height: 10px;
+      border-right: 1px solid rgba(126,144,140,.78);
+      border-bottom: 1px solid rgba(126,144,140,.78);
+      transform: translateX(-50%) rotate(45deg);
+      animation: scroll-cue-chevron-b 1.45s ease-in-out infinite;
+    }
+    @keyframes scroll-cue-chevron-a {
+      0% { transform: translateX(-50%) translateY(-2px) rotate(45deg); opacity: .18; }
+      55% { transform: translateX(-50%) translateY(4px) rotate(45deg); opacity: .88; }
+      100% { transform: translateX(-50%) translateY(9px) rotate(45deg); opacity: 0; }
+    }
+    @keyframes scroll-cue-chevron-b {
+      0% { transform: translateX(-50%) translateY(-4px) rotate(45deg); opacity: 0; }
+      30% { transform: translateX(-50%) translateY(0px) rotate(45deg); opacity: .22; }
+      70% { transform: translateX(-50%) translateY(6px) rotate(45deg); opacity: .76; }
+      100% { transform: translateX(-50%) translateY(11px) rotate(45deg); opacity: 0; }
+    }
+    .products-honeycomb-bg {
+      position: relative;
+      overflow: visible;
+      z-index: 0;
+      background-color: #1C2120;
+      background-image: radial-gradient(72% 54% at 50% 44%, rgba(45,168,255,.07), rgba(45,168,255,0) 72%);
+      animation: products-cube-base 18s ease-in-out infinite alternate;
+    }
+    .products-honeycomb-bg::before,
+    .products-honeycomb-bg::after {
+      content: "";
+      position: absolute;
+      inset: -14%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .products-honeycomb-bg::before {
+      background: linear-gradient(110deg, rgba(45,168,255,0) 18%, rgba(45,168,255,.09) 48%, rgba(45,168,255,0) 78%);
+      mix-blend-mode: screen;
+      opacity: .28;
+      animation: products-cube-sweep 14s ease-in-out infinite;
+    }
+    .products-honeycomb-bg::after {
+      background:
+        radial-gradient(55% 42% at 28% 34%, rgba(126,144,140,.10), rgba(126,144,140,0) 76%),
+        radial-gradient(48% 38% at 76% 68%, rgba(45,168,255,.09), rgba(45,168,255,0) 78%);
+      opacity: .48;
+      animation: products-cube-breathe 12s ease-in-out infinite;
+    }
+    .products-honeycomb-bg > * {
+      position: relative;
+      z-index: 1;
+    }
+    .products-honeycomb-lights {
+      position: absolute;
+      inset: 0 0 -110px 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .hc-light {
+      position: absolute;
+      width: 62px;
+      height: 62px;
+      transform: translate(-50%, -50%);
+      opacity: .32;
+      filter: saturate(1.05);
+    }
+    .hc-light svg { width: 100%; height: 100%; display: block; overflow: visible; }
+    .hc-light path,
+    .hc-light polygon {
+      fill: none;
+      stroke: rgba(126,144,140,.26);
+      stroke-width: 1.32;
+      vector-effect: non-scaling-stroke;
+      stroke-linejoin: miter;
+      stroke-linecap: square;
+    }
+    .hc-light.is-on { animation: hc-breathe var(--dur, 3800ms) ease-in-out forwards; }
+    .hc-light.is-on path,
+    .hc-light.is-on polygon {
+      stroke-dasharray: 5 5;
+      animation: hc-pixel-line var(--dur, 3800ms) steps(12, end) forwards;
+    }
+    .hc-light.c-blue path, .hc-light.c-blue polygon { stroke: #2DA8FF; }
+    .hc-light.c-green path, .hc-light.c-green polygon { stroke: #39FF7A; }
+    .hc-light.c-white path, .hc-light.c-white polygon { stroke: #FFFFFF; }
+    .hc-light.c-sage path, .hc-light.c-sage polygon { stroke: #7E908C; stroke-width: 1.8; }
+    .hc-light.c-blue  { filter: drop-shadow(0 0 6px rgba(45,168,255,.55)) drop-shadow(0 0 14px rgba(45,168,255,.3)); }
+    .hc-light.c-green { filter: drop-shadow(0 0 7px rgba(57,255,122,.62)) drop-shadow(0 0 14px rgba(57,255,122,.35)); }
+    .hc-light.c-white { filter: drop-shadow(0 0 6px rgba(255,255,255,.48)) drop-shadow(0 0 12px rgba(255,255,255,.28)); }
+    .hc-light.c-sage  { filter: drop-shadow(0 0 8px rgba(126,144,140,.82)) drop-shadow(0 0 18px rgba(126,144,140,.52)); }
+    .cube-trace-dot {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      z-index: 1;
+      background: #2DA8FF;
+      box-shadow: 0 0 4px rgba(45,168,255,.42), 0 0 10px rgba(45,168,255,.22);
+    }
+    .cube-trace-dot.c-blue {
+      background: #2DA8FF;
+      box-shadow: 0 0 4px rgba(45,168,255,.42), 0 0 10px rgba(45,168,255,.22);
+    }
+    .cube-trace-dot.c-green {
+      background: #39FF7A;
+      box-shadow: 0 0 4px rgba(57,255,122,.5), 0 0 10px rgba(57,255,122,.26);
+    }
+    .cube-trace-dot.c-white {
+      background: #FFFFFF;
+      box-shadow: 0 0 4px rgba(255,255,255,.45), 0 0 9px rgba(255,255,255,.24);
+    }
+    @keyframes hc-breathe {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(.93); }
+      26% { opacity: .82; transform: translate(-50%, -50%) scale(1.015); }
+      60% { opacity: .46; transform: translate(-50%, -50%) scale(.99); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(.95); }
+    }
+    @keyframes hc-pixel-line {
+      0% { opacity: 1; stroke-dashoffset: 0; }
+      58% { opacity: .92; stroke-dashoffset: 6; }
+      100% { opacity: 0; stroke-dashoffset: 88; }
+    }
+    @keyframes products-cube-base {
+      0% { background-position: 0 0; }
+      50% { background-position: 0 -8px; }
+      100% { background-position: 0 0; }
+    }
+    @keyframes products-cube-sweep {
+      0% { transform: translate3d(-18%, 0, 0); opacity: .14; }
+      55% { opacity: .34; }
+      100% { transform: translate3d(14%, 0, 0); opacity: .16; }
+    }
+    @keyframes products-cube-breathe {
+      0%, 100% { opacity: .36; transform: scale(1); }
+      50% { opacity: .56; transform: scale(1.02); }
+    }
+    #prod-mission {
+      position: relative;
+      z-index: 2;
+      background-color: #1C2120;
+    }
+
+    /* ── Steel-blue glow on hero sub ── */
+    .sub-glow {
+      color: #2DA8FF;
+      font-weight: 500;
+      text-shadow:
+        0 0  6px rgba(45,168,255,.55),
+        0 0 14px rgba(45,168,255,.35),
+        0 0 30px rgba(45,168,255,.18),
+        0 0 60px rgba(45,168,255,.08);
+    }
+
+    /* ══════════════════════════════════════════
+       PRODUCT SUITE v4.5
+    ══════════════════════════════════════════ */
+    .suite-panel {
+      border: 1px solid rgba(126,144,140,.2);
+      background: rgba(28,33,32,.75);
+    }
+    .suite-chip {
+      border: 1px solid rgba(126,144,140,.35);
+      color: #7E908C;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .66rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .audience-tab {
+      border: 1px solid #5C706C;
+      color: #7E908C;
+      background: transparent;
+      padding: .7rem 1rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .78rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      transition: all .18s ease;
+    }
+    .audience-tab.active {
+      background: #2DA8FF;
+      border-color: #2DA8FF;
+      color: #DCE5F2;
+      box-shadow: 0 0 18px rgba(45,168,255,.45);
+    }
+    .audience-panel { display: none; }
+    .audience-panel.active { display: block; }
+    .product-node {
+      border: 1px solid #E0E0E0;
+      background: #fff;
+      padding: 1.25rem;
+      padding-bottom: 3.2rem;
+      min-height: 170px;
+      overflow: hidden;
+      position: relative;
+      transition: min-height .28s ease, transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+    .product-node:hover {
+      transform: translate(-2px, -2px);
+      border-color: #2DA8FF;
+      box-shadow: 4px 4px 0 #2DA8FF;
+      min-height: 260px;
+    }
+    .product-acronym {
+      font-family: 'BDSans', 'Space Grotesk', sans-serif;
+      font-size: 1.8rem;
+      line-height: 1;
+      letter-spacing: .04em;
+      color: #1C2120;
+    }
+    .product-node h3 {
+      transition: font-size .24s ease;
+      font-size: 1.08rem;
+    }
+    .product-node:hover h3 {
+      font-size: 1.32rem;
+    }
+    .product-node p {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transform: translateY(8px);
+      transition: max-height .3s ease, opacity .25s ease, transform .25s ease;
+    }
+    .product-node:hover p {
+      max-height: 140px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .tile-arrow {
+      width: 86px;
+      height: 24px;
+      margin: 0;
+      display: block;
+      position: absolute;
+      left: 1.25rem;
+      bottom: 1rem;
+    }
+    .tile-arrow svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      transform-origin: 50% 50%;
+      will-change: transform;
+      transform: scaleY(1) translateY(0);
+      transition: transform .9s cubic-bezier(.2,.72,.2,1), filter .9s ease;
+    }
+    .product-node:hover .tile-arrow svg {
+      transform: scaleY(-1) translateY(0);
+      filter: drop-shadow(0 0 8px rgba(57,255,122,.72)) drop-shadow(0 0 18px rgba(57,255,122,.46));
+    }
+    .tile-arrow .arrow-base {
+      fill: none;
+      stroke: #1C2120;
+      stroke-width: 1.5;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+      transition: stroke .85s ease, filter .85s ease;
+    }
+    .tile-arrow .arrow-glow {
+      fill: none;
+      stroke: #2DA8FF;
+      stroke-width: 1.5;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      opacity: 0;
+      filter: drop-shadow(0 0 5px rgba(45,168,255,.45));
+      animation: arrow-trace 3.2s ease-in-out infinite;
+      transition: stroke .85s ease, filter .85s ease, opacity .85s ease, stroke-dashoffset .85s ease;
+    }
+    .tile-arrow .tip-base {
+      fill: #1C2120;
+      transition: fill .85s ease, filter .85s ease;
+    }
+    .tile-arrow .tip-glow {
+      fill: #2DA8FF;
+      opacity: 0;
+      filter: drop-shadow(0 0 6px rgba(45,168,255,.5));
+      animation: arrow-tip-glow 3.2s ease-in-out infinite;
+      transition: fill .85s ease, filter .85s ease, opacity .85s ease;
+    }
+    .product-node:hover .tile-arrow .arrow-glow {
+      stroke: #39FF7A;
+      stroke-width: 2;
+      filter: drop-shadow(0 0 8px rgba(57,255,122,.88)) drop-shadow(0 0 18px rgba(57,255,122,.6));
+      opacity: 1;
+      stroke-dashoffset: 0;
+      animation: none;
+    }
+    .product-node:hover .tile-arrow .arrow-base {
+      stroke: #39FF7A;
+      stroke-width: 1.8;
+      filter: drop-shadow(0 0 8px rgba(57,255,122,.74)) drop-shadow(0 0 18px rgba(57,255,122,.5));
+    }
+    .product-node:hover .tile-arrow .tip-glow {
+      fill: #39FF7A;
+      filter: drop-shadow(0 0 8px rgba(57,255,122,.8)) drop-shadow(0 0 16px rgba(57,255,122,.58));
+      opacity: 1;
+      animation: none;
+    }
+    .product-node:hover .tile-arrow .tip-base {
+      fill: #39FF7A;
+      filter: drop-shadow(0 0 7px rgba(57,255,122,.72)) drop-shadow(0 0 15px rgba(57,255,122,.45));
+    }
+    .tile-arrow .tip-group {
+      transform-origin: 70px 14px;
+      animation: arrow-tip-drop 3.2s ease-in-out infinite;
+    }
+    .product-node:hover .tile-arrow .tip-group {
+      animation: none;
+      transform: translateY(0);
+    }
+    @keyframes arrow-trace {
+      0% { stroke-dashoffset: 100; opacity: 0; }
+      25% { opacity: 1; }
+      72% { stroke-dashoffset: 0; opacity: 1; }
+      100% { stroke-dashoffset: 0; opacity: 0; }
+    }
+    @keyframes arrow-tip-glow {
+      0%,22% { opacity: 0; }
+      38%,72% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    @keyframes arrow-tip-drop {
+      0%,58%,100% { transform: translateY(0); }
+      74% { transform: translateY(2px); }
+    }
+    .tile-arrow .pixel-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .tile-arrow .pixel-overlay .px {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #2DA8FF;
+      opacity: 0;
+      transform: translate3d(0,0,0);
+    }
+    .product-node:hover .tile-arrow .pixel-overlay .px {
+      background: #39FF7A;
+    }
+    .tile-arrow.px-burst-out .pixel-overlay .px {
+      animation: px-out var(--pd, .24s) cubic-bezier(.25,.7,.2,1) forwards;
+      animation-delay: var(--pl, 0ms);
+    }
+    .tile-arrow.px-burst-in .pixel-overlay .px {
+      animation: px-in var(--pd, .24s) cubic-bezier(.25,.7,.2,1) forwards;
+      animation-delay: var(--pl, 0ms);
+    }
+    @keyframes px-out {
+      0% { opacity: .95; transform: translate3d(0,0,0); }
+      100% { opacity: 0; transform: translate3d(0,1.5px,0) scale(.9); }
+    }
+    @keyframes px-in {
+      0% { opacity: 0; transform: translate3d(0,-2px,0); }
+      45% { opacity: .92; transform: translate3d(0,0,0) scale(1); }
+      100% { opacity: 0; transform: translate3d(0,.8px,0) scale(.95); }
+    }
+    .flow-wrap {
+      border: 1px solid rgba(126,144,140,.2);
+      background: linear-gradient(180deg, rgba(28,33,32,.98), rgba(13,15,14,.98));
+      padding: 1.25rem;
+    }
+    .flow-lane {
+      position: relative;
+      height: 2px;
+      background: rgba(126,144,140,.35);
+      margin: 2.3rem 0 1rem;
+    }
+    .flow-token {
+      position: absolute;
+      top: -5px;
+      width: 10px; height: 10px;
+      background: #2DA8FF;
+      box-shadow: 0 0 14px rgba(45,168,255,.6);
+      left: calc(var(--s1, 12.5%) - 5px);
+      transition: left .34s linear, background .16s ease, box-shadow .16s ease, transform .16s ease, opacity .12s linear;
+    }
+    .flow-token.is-green {
+      background: #39FF7A;
+      box-shadow: 0 0 20px rgba(57,255,122,.9);
+      animation: token-green-pulse .95s ease-in-out infinite;
+    }
+    @keyframes token-green-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.24); }
+    }
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: .8rem;
+    }
+    .flow-step {
+      border: 1px solid rgba(126,144,140,.28);
+      padding: .8rem;
+      min-height: 76px;
+      background: rgba(28,33,32,.6);
+      overflow: hidden;
+      transition: min-height .28s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .flow-step:hover, .flow-step:focus-within {
+      min-height: 152px;
+      border-color: rgba(45,168,255,.68);
+      box-shadow: 0 0 0 1px rgba(45,168,255,.28);
+    }
+    .flow-step b {
+      color: #A8B8B4;
+      letter-spacing: .08em;
+      font-size: .72rem;
+    }
+    .flow-step p {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transform: translateY(8px);
+      transition: max-height .28s ease, opacity .24s ease, transform .24s ease;
+    }
+    .flow-step:hover p, .flow-step:focus-within p {
+      max-height: 95px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .page-view { display: none; }
+    .page-view.active { display: block; }
+    @media (max-width: 900px) {
+      .flow-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .flow-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ══════════════════════════════════════════
+       SCROLL REVEAL
+    ══════════════════════════════════════════ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .55s ease, transform .55s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ══════════════════════════════════════════
+       SERVICE CARDS — honeycomb 2-3% opacity
+    ══════════════════════════════════════════ */
+    .service-card {
+      border: 1px solid #E0E0E0;
+      background-color: #fff;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpolygon points='28,2 54,16 54,44 28,58 2,44 2,16' fill='none' stroke='%232DA8FF' stroke-width='1.4' opacity='0.025'/%3E%3Cpolygon points='28,52 54,66 54,94 28,108 2,94 2,66' fill='none' stroke='%232DA8FF' stroke-width='1.4' opacity='0.025'/%3E%3Cpolygon points='0,27 -26,41 -26,69 0,83 26,69 26,41' fill='none' stroke='%232DA8FF' stroke-width='1.4' opacity='0.025'/%3E%3Cpolygon points='56,27 30,41 30,69 56,83 82,69 82,41' fill='none' stroke='%232DA8FF' stroke-width='1.4' opacity='0.025'/%3E%3C/svg%3E");
+      background-size: 56px 100px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .service-card:hover {
+      border-color: #7E908C;
+      box-shadow: 4px 4px 0 #7E908C;
+    }
+
+    /* ══════════════════════════════════════════
+       NAV
+    ══════════════════════════════════════════ */
+    nav { border-bottom: 1px solid rgba(126,144,140,.15); }
+
+    /* ══════════════════════════════════════════
+       MISC UTILS
+    ══════════════════════════════════════════ */
+    .friction-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 3rem; font-weight: 700;
+      color: #E0E0E0; line-height: 1;
+    }
+    .problem-head-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.5rem;
+      align-items: end;
+    }
+    @media (min-width: 960px) {
+      .problem-head-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(280px, 460px);
+        gap: 2.5rem;
+      }
+    }
+    .mbs-wrap {
+      border: 1px solid #E5E7EB;
+      background: #F8FAFC;
+      padding: .9rem;
+      width: 100%;
+      max-width: 460px;
+      min-width: 0;
+      justify-self: end;
+      box-sizing: border-box;
+    }
+    .mbs-cube-viewport {
+      --face-h: 74px;
+      height: var(--face-h);
+      overflow: hidden;
+      position: relative;
+      perspective: 1200px;
+      padding: 0 10px;
+      box-sizing: border-box;
+    }
+    .mbs-cube {
+      position: relative;
+      width: 100%;
+      height: var(--face-h);
+      transform-style: preserve-3d;
+      transition: transform .78s cubic-bezier(.22,.8,.26,1);
+      will-change: transform;
+      transform: rotateX(0deg);
+    }
+    .mbs-cube.is-rotated {
+      transform: rotateX(90deg);
+    }
+    .mbs-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      background: #F8FAFC;
+      padding: 0 8px .4rem 8px;
+      box-sizing: border-box;
+    }
+    .mbs-face-front {
+      transform: translateZ(calc(var(--face-h) / 2));
+    }
+    .mbs-face-bottom {
+      transform: rotateX(-90deg) translateZ(calc(var(--face-h) / 2));
+    }
+    .splitflap {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+      gap: 2px;
+      background: #111827;
+      border: 1px solid #374151;
+      padding: 8px 10px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+    }
+    .flap-char {
+      width: 18px;
+      height: 28px;
+      background: #0B0F14;
+      border: 1px solid #1F2937;
+      color: #E5E7EB;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      line-height: 26px;
+      text-align: center;
+      position: relative;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+    .flap-char.is-flipping {
+      animation: flap-flip .16s linear;
+    }
+    @keyframes flap-flip {
+      0% { transform: rotateX(0deg); }
+      49% { transform: rotateX(90deg); }
+      50% { transform: rotateX(-90deg); }
+      100% { transform: rotateX(0deg); }
+    }
+    .mbs-sub {
+      margin-top: .55rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .72rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #6B7280;
+      padding-left: 8px;
+    }
+    .tag {
+      display: inline-block;
+      border: 1px solid #E0E0E0;
+      font-size: .65rem; letter-spacing: .18em;
+      text-transform: uppercase; padding: 3px 10px; color: #888;
+    }
+    .tag-sage  { border-color: #7E908C; color: #7E908C; }
+    .tag-steel { border-color: #2DA8FF; color: #2DA8FF; }
+    .h-line { height: 1px; background: #E0E0E0; }
+    .brand-lockup {
+      white-space: nowrap;
+      text-transform: none !important;
+      font-family: 'BDSans', 'Space Grotesk', sans-serif;
+    }
+    .nav-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-emblem-wrap {
+      width: 32px;
+      height: 25px;
+      position: relative;
+      display: block;
+      flex: 0 0 auto;
+      transform: translateY(1px);
+    }
+    .nav-emblem-base {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .nav-emblem {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
+      pointer-events: none;
+    }
+    .nav-emblem .wire {
+      stroke: #7E908C;
+      stroke-width: 2;
+      fill: none;
+      vector-effect: non-scaling-stroke;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+      transition: stroke .22s ease, filter .22s ease, opacity .18s ease;
+      opacity: 0;
+    }
+    .nav-emblem .block {
+      fill: #7E908C;
+      opacity: .85;
+      transition: fill .22s ease, filter .22s ease, opacity .18s ease;
+      opacity: 0;
+    }
+    .nav-emblem .trace-dot {
+      fill: #7E908C;
+      transition: fill .22s ease, filter .22s ease;
+    }
+    .nav-emblem.is-dashed .wire {
+      opacity: 1;
+      stroke-dasharray: 5 4;
+      animation: nav-emblem-dash .72s steps(8, end) infinite;
+    }
+    .nav-emblem.is-dashed .block {
+      opacity: .85;
+    }
+    .nav-emblem.pulse-blue .wire, .nav-emblem.pulse-blue .trace-dot {
+      stroke: #2DA8FF;
+      fill: #2DA8FF;
+      filter: drop-shadow(0 0 4px rgba(45,168,255,.45));
+    }
+    .nav-emblem.pulse-green .wire, .nav-emblem.pulse-green .trace-dot {
+      stroke: #39FF7A;
+      fill: #39FF7A;
+      filter: drop-shadow(0 0 4px rgba(57,255,122,.5));
+    }
+    .nav-emblem.pulse-white .wire, .nav-emblem.pulse-white .trace-dot {
+      stroke: #FFFFFF;
+      fill: #FFFFFF;
+      filter: drop-shadow(0 0 4px rgba(255,255,255,.42));
+    }
+    @keyframes nav-emblem-dash {
+      from { stroke-dashoffset: 0; }
+      to { stroke-dashoffset: -36; }
+    }
+    .acronym-lockup {
+      font-family: 'BDSans', 'Space Grotesk', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .02em;
+    }
+    .mv-chip {
+      display: inline-block;
+      padding: 9px 24px;
+      width: min(320px, 100%);
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      font-family: 'BDSans', 'Space Grotesk', sans-serif;
+      font-size: 1.02rem;
+      letter-spacing: .17em;
+      text-transform: uppercase;
+      border-width: 1px;
+      border-style: solid;
+      line-height: 1;
+    }
+    .mv-chip-mission {
+      color: rgba(28,33,32,.92);
+      background: linear-gradient(90deg, rgba(198,214,209,.44) 0%, rgba(170,192,185,.28) 52%, rgba(170,192,185,0) 100%);
+      border-image: linear-gradient(90deg, rgba(76,100,94,.98) 0%, rgba(76,100,94,.5) 58%, rgba(76,100,94,0) 100%) 1;
+    }
+    .mv-chip-vision {
+      color: #1C2120;
+      background: linear-gradient(90deg, rgba(45,168,255,.34) 0%, rgba(45,168,255,.14) 52%, rgba(45,168,255,0) 100%);
+      border-image: linear-gradient(90deg, rgba(36,131,198,.98) 0%, rgba(36,131,198,.45) 58%, rgba(36,131,198,0) 100%) 1;
+    }
+    .mv-panels {
+      display: flex;
+      border-top: 1px solid rgba(126,144,140,.22);
+      border-bottom: 1px solid rgba(126,144,140,.22);
+      min-height: 560px;
+      width: 100%;
+      overflow: hidden;
+    }
+    #mission.mv-panels {
+      width: min(1320px, calc(100% - 3rem));
+      margin: 0 auto;
+    }
+    .mv-panel {
+      flex: 1 1 50%;
+      min-width: 0;
+      padding: 3.8rem 3rem 4.2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      overflow: hidden;
+      transition: flex-basis .62s cubic-bezier(.22,.74,.22,1), padding .35s ease;
+    }
+    #mission .mv-chip {
+      margin-top: auto;
+      margin-bottom: auto;
+      transform: translateY(0);
+      transition: margin .42s ease, transform .42s ease;
+    }
+    .mv-panel[data-panel="mission"] { background: #7E908C; }
+    .mv-panel[data-panel="vision"] { background: #FFFFFF; border-left: 1px solid rgba(126,144,140,.22); }
+
+    .mv-anim {
+      display: block;
+      opacity: 1;
+      max-height: 80px;
+      margin-bottom: .25rem;
+      transition: opacity .25s ease, max-height .25s ease, margin .25s ease;
+      overflow: hidden;
+    }
+    .mv-content {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transform: translateY(10px);
+      transition: max-height .45s ease, opacity .35s ease, transform .35s ease;
+    }
+    .mv-about-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1.05rem;
+      padding: .6rem 1rem;
+      border: 1px solid #2DA8FF;
+      background: #2DA8FF;
+      color: #1C2120;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .68rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      transition: border-color .2s ease, box-shadow .2s ease, color .2s ease;
+    }
+    .mv-about-link:hover,
+    .mv-about-link:focus-visible {
+      border-color: #39FF7A;
+      background: #39FF7A;
+      color: #1C2120;
+      box-shadow: 0 0 14px rgba(57,255,122,.30);
+    }
+    .mission-proof {
+      margin-top: 1.35rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(76,100,94,.28);
+      max-width: 34rem;
+    }
+    .mission-abstract {
+      width: 100%;
+      height: 92px;
+      position: relative;
+      border: 1px solid rgba(76,100,94,.45);
+      background:
+        linear-gradient(90deg, rgba(76,100,94,.14) 0%, rgba(76,100,94,.04) 55%, rgba(76,100,94,0) 100%),
+        linear-gradient(0deg, rgba(28,33,32,.05), rgba(28,33,32,.05));
+      overflow: hidden;
+    }
+    .mission-abstract .rail {
+      position: absolute;
+      left: 12px;
+      right: 66px;
+      height: 1px;
+      background: rgba(76,100,94,.6);
+    }
+    .mission-abstract .rail.r1 { top: 26px; }
+    .mission-abstract .rail.r2 { top: 46px; }
+    .mission-abstract .rail.r3 { top: 66px; }
+    .mission-abstract .beam {
+      position: absolute;
+      top: 0;
+      width: 44px;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(143,165,160,0) 0%, rgba(143,165,160,.45) 50%, rgba(143,165,160,0) 100%);
+      left: -44px;
+      opacity: .28;
+    }
+    .mission-abstract .trace-marker {
+      position: absolute;
+      width: 7px;
+      height: 7px;
+      opacity: 0;
+      transform: translate(-50%, -50%);
+      transition: opacity .18s linear;
+      will-change: opacity, transform;
+    }
+    .mission-abstract .trace-marker.is-visible {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+    .mission-abstract .trace-marker.green {
+      background: #39FF7A;
+      box-shadow: 0 0 0 1px rgba(57,255,122,.45), 0 0 9px rgba(57,255,122,.35);
+    }
+    .mission-abstract .trace-marker.blue {
+      background: #2DA8FF;
+      box-shadow: 0 0 0 1px rgba(45,168,255,.45), 0 0 9px rgba(45,168,255,.35);
+    }
+    .mission-abstract .node {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #8FA5A0;
+      box-shadow: 0 0 0 1px rgba(76,100,94,.62), 0 0 10px rgba(126,144,140,.35);
+      animation: mission-node-glow 2.3s ease-in-out infinite;
+    }
+    .mission-abstract .node.n1 { right: 52px; top: 22px; animation-delay: .0s; }
+    .mission-abstract .node.n2 { right: 52px; top: 42px; animation-delay: .3s; }
+    .mission-abstract .node.n3 { right: 52px; top: 62px; animation-delay: .6s; }
+    .mission-abstract .spine {
+      position: absolute;
+      right: 56px;
+      top: 26px;
+      width: 1px;
+      height: 40px;
+      background: rgba(76,100,94,.66);
+      box-shadow: 0 0 8px rgba(76,100,94,.25);
+    }
+    .mission-abstract .core {
+      position: absolute;
+      right: 20px;
+      top: 35px;
+      width: 20px;
+      height: 20px;
+      border: 1px solid rgba(76,100,94,.82);
+      background: #FFFFFF;
+      box-shadow: 0 0 14px rgba(255,255,255,.22);
+      animation: mission-core-throb 2.1s ease-in-out infinite;
+    }
+    .mission-quote {
+      margin-top: .85rem;
+      color: rgba(28,33,32,.9);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .88rem;
+      line-height: 1.45;
+      letter-spacing: .01em;
+    }
+    @keyframes mission-node-glow {
+      0%, 100% { opacity: .45; transform: scale(.92); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+    @keyframes mission-core-throb {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .mv-panels[data-active="mission"] .mv-panel[data-panel="mission"] { flex: 3 1 75%; }
+    .mv-panels[data-active="mission"] .mv-panel[data-panel="vision"] { flex: 1 1 25%; }
+    .mv-panels[data-active="vision"] .mv-panel[data-panel="vision"] { flex: 3 1 75%; }
+    .mv-panels[data-active="vision"] .mv-panel[data-panel="mission"] { flex: 1 1 25%; }
+    .mv-panels[data-active="mission"] .mv-panel[data-panel="mission"] .mv-content,
+    .mv-panels[data-active="vision"] .mv-panel[data-panel="vision"] .mv-content {
+      max-height: 1200px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .mv-panels[data-active="mission"] .mv-panel[data-panel="mission"] .mv-chip,
+    .mv-panels[data-active="vision"] .mv-panel[data-panel="vision"] .mv-chip {
+      margin-top: 0;
+      margin-bottom: .9rem;
+      transform: translateY(-3px);
+    }
+    .mv-panels[data-active="mission"] .mv-panel[data-panel="vision"] .mv-anim,
+    .mv-panels[data-active="vision"] .mv-panel[data-panel="mission"] .mv-anim {
+      opacity: 0;
+      max-height: 0;
+      margin: 0;
+    }
+
+    /* CSS fallback hover behavior when no click pin is active */
+    .mv-panels[data-active="none"]:hover .mv-panel { flex: 1 1 25%; }
+    .mv-panels[data-active="none"] .mv-panel:hover,
+    .mv-panels[data-active="none"] .mv-panel:focus-within { flex: 3 1 75%; }
+    .mv-panels[data-active="none"] .mv-panel:hover .mv-content,
+    .mv-panels[data-active="none"] .mv-panel:focus-within .mv-content {
+      max-height: 1200px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .mv-panels[data-active="none"] .mv-panel:hover .mv-chip,
+    .mv-panels[data-active="none"] .mv-panel:focus-within .mv-chip {
+      margin-top: 0;
+      margin-bottom: .9rem;
+      transform: translateY(-3px);
+    }
+    .mv-panels[data-active="none"]:hover .mv-panel:not(:hover):not(:focus-within) .mv-anim {
+      opacity: 0;
+      max-height: 0;
+      margin: 0;
+    }
+
+    @media (max-width: 900px) {
+      .mv-panels { display: block; min-height: 0; }
+      #mission.mv-panels { width: calc(100% - 1.5rem); }
+      .mv-panel { padding: 2.5rem 1.5rem 2.8rem; border-left: none !important; border-top: 1px solid rgba(126,144,140,.22); }
+      .mv-panel:first-child { border-top: none; }
+      .mv-anim { max-height: 80px; }
+      .mv-content { max-height: 1200px; opacity: 1; transform: none; }
+      .mission-proof { max-width: none; }
+    }
+
+    .about-grid-bg {
+      background-color: #1C2120;
+      background-image:
+        repeating-linear-gradient(-14deg, rgba(126,144,140,.18) 0 1px, transparent 1px 30px),
+        linear-gradient(90deg, rgba(126,144,140,.08) 0%, rgba(126,144,140,0) 68%);
+      background-size: auto;
+    }
+    .about-card {
+      border: 1px solid rgba(126,144,140,.28);
+      background: rgba(12,15,14,.62);
+      padding: 1.25rem 1.1rem;
+    }
+    .brand-abs {
+      display: inline-block;
+      font-size: .74em;
+      letter-spacing: .08em;
+      line-height: 1;
+      vertical-align: baseline;
+      transform: translateY(-0.03em);
+      transform-origin: left baseline;
+    }
+
+    /* Section-specific tone rollback: keep original Steel Blue in Products + Audience */
+    #prod-services .tag-steel { border-color: #2DA8FF; color: #2DA8FF; }
+    #prod-services .product-node:hover { border-color: #2DA8FF; box-shadow: 4px 4px 0 #2DA8FF; }
+    #prod-friction .audience-tab.active {
+      background: #2DA8FF;
+      border-color: #2DA8FF;
+      box-shadow: 0 0 18px rgba(45,168,255,.45);
+    }
+
+    .footer-input {
+      background: transparent; border: none;
+      border-bottom: 1px solid #5C706C;
+      color: #fff; font-family: 'Space Grotesk', sans-serif;
+      font-size: .9rem; padding: .6rem 0; width: 100%; outline: none;
+      transition: border-color .2s;
+    }
+    .footer-input::placeholder { color: #5C706C; font-size: .82rem; letter-spacing: .05em; }
+    .footer-input:focus { border-bottom-color: #7E908C; }
+
+    #ver-badge {
+      position: fixed; bottom: 1rem; left: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .58rem; letter-spacing: .12em;
+      color: rgba(126,144,140,.22);
+      z-index: 100; pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════
+       v4.5 — GEOMETRIC INTEGRITY ANIMATIONS
+       All CSS-only, no canvas, strict 0px edges
+    ══════════════════════════════════════════ */
+
+    /* Shared geo container */
+    .geo-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: .75rem;
+    }
+    .geo-canvas {
+      width: 48px; height: 48px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    /* ── 1. TRANSPARENCY — Rotating wireframe triangular prism ── */
+    .prism-wrap {
+      width: 48px; height: 48px;
+      position: relative;
+      animation: prism-spin 5s linear infinite;
+      transform-style: preserve-3d;
+    }
+    @keyframes prism-spin { to { transform: rotateY(360deg) rotateX(15deg); } }
+
+    .prism-face {
+      position: absolute;
+      border: 1.5px solid rgba(126,144,140,.95);
+      background: rgba(126,144,140,.10);
+    }
+    /* Front face — square placeholder for a flat triangular look */
+    .prism-front {
+      width: 30px; height: 30px;
+      top: 9px; left: 9px;
+      transform: rotateY(0deg) translateZ(8px);
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      border: none;
+      box-shadow: inset 0 0 0 1.5px rgba(126,144,140,.95);
+    }
+    .prism-back {
+      width: 30px; height: 30px;
+      top: 9px; left: 9px;
+      transform: rotateY(180deg) translateZ(8px);
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      border: none;
+      box-shadow: inset 0 0 0 1.5px rgba(126,144,140,.75);
+      opacity: .75;
+    }
+    .prism-side {
+      width: 16px; height: 30px;
+      top: 9px; left: 16px;
+      transform: rotateY(90deg) translateZ(15px);
+      background: rgba(126,144,140,.12);
+      border: 1.5px solid rgba(126,144,140,.8);
+    }
+    .prism-axis {
+      position: absolute;
+      left: 23px;
+      top: 8px;
+      width: 2px;
+      height: 32px;
+      background: rgba(126,144,140,.95);
+      box-shadow: 0 0 10px rgba(126,144,140,.28);
+    }
+
+    /* ── 2. COMPLIANCE — Pulsing concentric rings ── */
+    .rings-wrap {
+      width: 48px; height: 48px;
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ring {
+      position: absolute;
+      border: 1px solid rgba(126,144,140,.5);
+      animation: ring-pulse 2.4s ease-out infinite;
+    }
+    .ring:nth-child(1) { width: 12px; height: 12px; animation-delay: 0s; }
+    .ring:nth-child(2) { width: 24px; height: 24px; animation-delay: .5s; }
+    .ring:nth-child(3) { width: 36px; height: 36px; animation-delay: 1s; }
+    .ring:nth-child(4) { width: 46px; height: 46px; animation-delay: 1.5s; }
+    @keyframes ring-pulse {
+      0%   { opacity: .8; transform: scale(.85); }
+      60%  { opacity: .4; transform: scale(1.05); }
+      100% { opacity: 0;  transform: scale(1.1); }
+    }
+
+    /* ── 3. AUTONOMY — Floating self-organizing micro-blocks ── */
+    .blocks-wrap {
+      width: 48px; height: 48px;
+      position: relative;
+    }
+    .micro-block {
+      position: absolute;
+      width: 8px; height: 8px;
+      background: transparent;
+      border: 1px solid rgba(126,144,140,.6);
+    }
+    /* 5 blocks orbit/float in staggered paths */
+    .micro-block:nth-child(1) { top: 4px;  left: 4px;  animation: float-a 3.2s ease-in-out infinite; }
+    .micro-block:nth-child(2) { top: 4px;  left: 36px; animation: float-b 2.8s ease-in-out infinite .4s; }
+    .micro-block:nth-child(3) { top: 20px; left: 20px; animation: float-c 3.6s ease-in-out infinite .8s; background: rgba(126,144,140,.12); }
+    .micro-block:nth-child(4) { top: 36px; left: 4px;  animation: float-a 3.0s ease-in-out infinite 1.2s; }
+    .micro-block:nth-child(5) { top: 36px; left: 36px; animation: float-b 3.4s ease-in-out infinite 1.6s; }
+
+    @keyframes float-a {
+      0%,100% { transform: translate(0,0); opacity: .7; }
+      33%      { transform: translate(4px,-5px); opacity: 1; }
+      66%      { transform: translate(-3px,3px); opacity: .5; }
+    }
+    @keyframes float-b {
+      0%,100% { transform: translate(0,0); opacity: .6; }
+      33%      { transform: translate(-5px,4px); opacity: 1; }
+      66%      { transform: translate(3px,-3px); opacity: .4; }
+    }
+    @keyframes float-c {
+      0%,100% { transform: translate(0,0) scale(1); opacity: .9; }
+      50%      { transform: translate(2px,-4px) scale(1.2); opacity: 1; }
+    }
+
+    /* ── 4. SCALE — Dot grid with expanding upward arrow ── */
+    .scale-wrap {
+      width: 48px; height: 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    /* 3×3 dot grid */
+    .dot-grid {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      padding: 6px;
+      gap: 4px;
+    }
+    .dot {
+      width: 4px; height: 4px;
+      background: rgba(126,144,140,.45);
+      align-self: center; justify-self: center;
+      animation: dot-fade 2.2s ease-in-out infinite;
+    }
+    .dot:nth-child(1) { animation-delay: 0s; }
+    .dot:nth-child(2) { animation-delay: .15s; }
+    .dot:nth-child(3) { animation-delay: .3s; }
+    .dot:nth-child(4) { animation-delay: .1s; }
+    .dot:nth-child(5) { animation-delay: .25s; }
+    .dot:nth-child(6) { animation-delay: .4s; }
+    .dot:nth-child(7) { animation-delay: .05s; }
+    .dot:nth-child(8) { animation-delay: .2s; }
+    .dot:nth-child(9) { animation-delay: .35s; }
+    @keyframes dot-fade {
+      0%,100% { opacity: .35; transform: scale(1); }
+      50%      { opacity: 1;   transform: scale(1.3); }
+    }
+    /* Arrowhead expanding upward */
+    .arrow-up {
+      position: absolute;
+      bottom: 4px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center;
+      animation: arrow-rise 2s ease-in-out infinite;
+    }
+    .arrow-shaft {
+      width: 1px; height: 12px;
+      background: rgba(126,144,140,.7);
+    }
+    .arrow-head {
+      width: 0; height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 7px solid rgba(126,144,140,.7);
+      /* override global border-radius reset for this decoration-only triangle */
+    }
+    @keyframes arrow-rise {
+      0%,100% { transform: translateX(-50%) translateY(0);   opacity: .6; }
+      50%      { transform: translateX(-50%) translateY(-5px); opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Custom cursor -->
+<div id="cursor-block" aria-hidden="true"></div>
+
+<!-- Version watermark -->
+<div id="ver-badge"><span class="brand-lockup">NFTi L<span class="brand-abs">ABS</span></span> · v4.5</div>
+
+<!-- ══════════════════════════════════════════
+     PRELOADER
+══════════════════════════════════════════ -->
+<div id="preloader">
+  <div class="text-center">
+    <div class="logo-text"><span class="brand-lockup">NFT<span id="preloader-logo-i" style="color:#7E908C;">i</span> L<span class="brand-abs">ABS</span></span></div>
+    <div class="logo-sub">Institutional PropTech &amp; FinTech</div>
+  </div>
+
+  <!-- Terminal — lines built/typed by JS; HTML shells only -->
+  <div id="terminal" aria-live="polite" aria-atomic="false">
+    <!-- JS will populate and reveal each line via typewriter -->
+  </div>
+
+  <!-- TOKENIZE button — revealed by JS 1.5s after last terminal line -->
+  <div class="btn-glow-wrap" id="btn-wrap">
+    <button id="tokenize-btn" onclick="startDisintegration()" aria-label="Enter NFTi LABS">
+      TOKENIZE
+    </button>
+    <div class="btn-glow-halo"></div>
+  </div>
+</div>
+
+<!-- Pixel transition canvas -->
+<canvas id="scatter-canvas" aria-hidden="true"></canvas>
+
+<!-- ══════════════════════════════════════════
+     MAIN SITE
+══════════════════════════════════════════ -->
+<div id="site" style="display:none;">
+
+  <!-- NAV -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-charcoal/95 backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto px-6 flex items-center justify-between h-14">
+      <div class="font-grotesk font-bold text-sage tracking-widest text-sm uppercase nav-brand">
+        <span class="brand-lockup">NFTi L<span class="brand-abs">ABS</span></span>
+        <span class="nav-emblem-wrap" aria-hidden="true">
+          <img class="nav-emblem-base" src="NFTi Emblem.png" alt="">
+          <svg id="nav-emblem-svg" class="nav-emblem" viewBox="0 0 796 627" focusable="false">
+            <path class="wire" d="M391 58 L658 205 L391 352 L125 205 Z"></path>
+            <line class="wire" x1="658" y1="58" x2="658" y2="205"></line>
+            <path class="wire" d="M125 205 L273 529 L391 604"></path>
+            <line class="wire" x1="391" y1="352" x2="391" y2="603"></line>
+            <line class="wire" x1="658" y1="205" x2="535" y2="271"></line>
+            <rect class="block" x="390" y="271" width="268" height="333"></rect>
+            <circle id="nav-emblem-dot" class="trace-dot" cx="658" cy="58" r="48"></circle>
+          </svg>
+        </span>
+      </div>
+      <div class="flex items-center gap-4 sm:gap-6 text-[10px] sm:text-xs tracking-widest uppercase text-sage/60 font-grotesk font-medium">
+        <a href="#" data-view-link="home" class="hover:text-sage transition-colors duration-200">Home</a>
+        <a href="#" data-view-link="products" class="hover:text-sage transition-colors duration-200">Products</a>
+        <a href="#" data-view-link="about" class="hover:text-sage transition-colors duration-200">About</a>
+        <a href="#contact"  class="hover:text-sage transition-colors duration-200">Contact</a>
+      </div>
+      <a href="#contact"
+         class="hidden md:inline-flex text-xs tracking-widest uppercase border border-sage text-sage px-4 py-2 font-grotesk font-semibold hover:bg-sage hover:text-charcoal transition-all duration-200">
+        Connect
+      </a>
+    </div>
+  </nav>
+
+  <div id="home-view" class="page-view active">
+    <!-- ── HERO ── -->
+    <section class="hero-grid-bg min-h-screen flex flex-col justify-center pt-14">
+      <div class="max-w-7xl mx-auto px-6 py-24">
+        <div class="reveal">
+          <span class="tag tag-sage">Est. 2024 · Web3 Infrastructure</span>
+        </div>
+        <h1 class="reveal font-grotesk font-bold text-white mt-8 leading-none"
+            style="font-size: clamp(3rem, 8vw, 7rem); letter-spacing: -.02em;">
+          Reimagine<br/><span style="color:#7E908C;font-family:'BDSans','Space Grotesk',sans-serif;">Liquidity.</span>
+        </h1>
+        <p class="reveal sub-glow mt-8 max-w-xl leading-relaxed font-grotesk"
+           style="font-size: clamp(1rem, 1.5vw, 1.2rem);">
+          Institutional-grade PropTech + FinTech infrastructure<br class="hidden md:block"/>
+          for a tokenized + agentic future.
+        </p>
+        <div class="reveal flex flex-wrap gap-4 mt-10">
+          <a href="#" data-view-link="products"
+             class="inline-flex items-center gap-2 bg-sage text-charcoal font-grotesk font-semibold text-sm tracking-widest uppercase px-6 py-3 hover:bg-sage-light transition-colors duration-200">
+            Explore Products <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </a>
+          <a href="#contact"
+             class="inline-flex items-center gap-2 border border-sage/40 text-sage font-grotesk font-medium text-sm tracking-widest uppercase px-6 py-3 hover:border-sage transition-colors duration-200">
+            Request a Brief
+          </a>
+        </div>
+      </div>
+      <div class="scroll-cue" aria-hidden="true"></div>
+    </section>
+
+    <!-- ── SYSTEMIC FRICTION ── -->
+    <section id="friction" class="bg-white py-28">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="reveal mb-16 problem-head-grid">
+          <div>
+            <span class="tag">The Problem</span>
+            <h2 class="font-grotesk font-bold text-charcoal mt-4"
+                style="font-size: clamp(2rem, 4vw, 3.2rem); letter-spacing: -.02em;">
+              Trillion-Dollar Legacy<br/>Inefficiencies.
+            </h2>
+            <p class="text-gray-500 mt-4 max-w-2xl leading-relaxed" style="font-size:1rem;">
+              Traditional real estate markets operate on decades-old infrastructure — manual settlement,
+              siloed data, illiquid assets, and opaque transactions. <span class="brand-lockup">NFTi L<span class="brand-abs">ABS</span></span> applies cryptography
+              and agentic AI to replace friction with programmable trust.
+            </p>
+          </div>
+          <div class="mbs-wrap" aria-label="Total Outstanding MBS Market Size">
+            <div class="mbs-cube-viewport">
+              <div id="mbs-cube" class="mbs-cube">
+                <div class="mbs-face mbs-face-front">
+                  <div id="mbs-flap-1" class="splitflap"></div>
+                  <div id="mbs-sub-1" class="mbs-sub">Total Outstanding MBS Market Size</div>
+                </div>
+                <div class="mbs-face mbs-face-bottom">
+                  <div id="mbs-flap-2" class="splitflap"></div>
+                  <div id="mbs-sub-2" class="mbs-sub">Total US Real-Estate Net equity</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-3 gap-px bg-gray-200">
+          <div class="reveal bg-white p-10">
+            <div class="friction-num">01</div>
+            <h3 class="font-grotesk font-semibold text-charcoal text-lg mt-5 mb-3">Illiquid Assets</h3>
+            <p class="text-gray-500 text-sm leading-relaxed">
+              Property ownership is indivisible and transfer-heavy. Tokenization fragments assets into
+              programmable units — enabling fractional ownership, secondary markets, and 24/7 settlement.
+            </p>
+          </div>
+          <div class="reveal bg-white p-10">
+            <div class="friction-num">02</div>
+            <h3 class="font-grotesk font-semibold text-charcoal text-lg mt-5 mb-3">Opaque Data</h3>
+            <p class="text-gray-500 text-sm leading-relaxed">
+              Valuations, title records, and transaction histories live in disconnected registries.
+              On-chain provenance creates a single source of truth auditable by any participant.
+            </p>
+          </div>
+          <div class="reveal bg-white p-10">
+            <div class="friction-num">03</div>
+            <h3 class="font-grotesk font-semibold text-charcoal text-lg mt-5 mb-3">Manual Operations</h3>
+            <p class="text-gray-500 text-sm leading-relaxed">
+              Compliance, disbursements, and reporting consume human bandwidth. Agentic AI automates
+              these workflows — reducing cost, eliminating error, and scaling without headcount.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SERVICE MATRIX ── -->
+    <section id="services" class="bg-charcoal py-28">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="reveal mb-16">
+          <span class="tag tag-sage">Service Matrix</span>
+          <h2 class="font-grotesk font-bold text-white mt-4"
+              style="font-size: clamp(2rem, 4vw, 3.2rem); letter-spacing: -.02em;">
+            Three Core Verticals.
+          </h2>
+          <p class="mt-2 text-sm font-mono tracking-widest" style="color:#2DA8FF;">
+            Blockchain Integration | Blockchain Strategy | Agentic Integration
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="reveal service-card p-10">
+            <div class="w-10 h-10 border border-sage flex items-center justify-center mb-6">
+              <i data-lucide="link" class="w-4 h-4 text-sage"></i>
+            </div>
+            <span class="tag">Blockchain Integration</span>
+            <h3 class="font-grotesk font-semibold text-charcoal text-xl mt-4 mb-4 leading-snug">
+              Legacy to On-Chain<br/>Asset Tokenization
+            </h3>
+            <p class="text-gray-500 text-sm leading-relaxed mb-8">
+              We architect and deploy the full tokenization stack — smart contracts, custody
+              solutions, and regulatory wrappers — that convert illiquid property assets into
+              compliant, tradeable digital securities.
+            </p>
+            <div class="h-line"></div>
+            <a href="#contact"
+               class="inline-flex items-center gap-2 mt-6 text-sage text-xs tracking-widest uppercase font-grotesk font-semibold hover:gap-4 transition-all duration-200">
+              Learn more <i data-lucide="arrow-right" class="w-3 h-3"></i>
+            </a>
+          </div>
+          <div class="reveal service-card p-10" style="transition-delay:.1s;">
+            <div class="w-10 h-10 border border-sage flex items-center justify-center mb-6">
+              <i data-lucide="building-2" class="w-4 h-4 text-sage"></i>
+            </div>
+            <span class="tag">Blockchain Strategy</span>
+            <h3 class="font-grotesk font-semibold text-charcoal text-xl mt-4 mb-4 leading-snug">
+              Institutional Consulting<br/>&amp; Ecosystem Design
+            </h3>
+            <p class="text-gray-500 text-sm leading-relaxed mb-8">
+              Strategic advisory for asset managers, family offices, and institutions entering
+              Web3. We design governance models, token economics, and go-to-market frameworks
+              built for institutional risk profiles.
+            </p>
+            <div class="h-line"></div>
+            <a href="#contact"
+               class="inline-flex items-center gap-2 mt-6 text-sage text-xs tracking-widest uppercase font-grotesk font-semibold hover:gap-4 transition-all duration-200">
+              Learn more <i data-lucide="arrow-right" class="w-3 h-3"></i>
+            </a>
+          </div>
+          <div class="reveal service-card p-10" style="transition-delay:.2s;">
+            <div class="w-10 h-10 border border-sage flex items-center justify-center mb-6">
+              <i data-lucide="cpu" class="w-4 h-4 text-sage"></i>
+            </div>
+            <span class="tag">Agentic Integration</span>
+            <h3 class="font-grotesk font-semibold text-charcoal text-xl mt-4 mb-4 leading-snug">
+              AI-Driven Autonomous<br/>Financial Operations
+            </h3>
+            <p class="text-gray-500 text-sm leading-relaxed mb-8">
+              Deploy LLM-powered agents that autonomously manage compliance checks,
+              investor reporting, dividend distribution, and portfolio rebalancing — eliminating
+              operational drag at institutional scale.
+            </p>
+            <div class="h-line"></div>
+            <a href="#contact"
+               class="inline-flex items-center gap-2 mt-6 text-sage text-xs tracking-widest uppercase font-grotesk font-semibold hover:gap-4 transition-all duration-200">
+              Learn more <i data-lucide="arrow-right" class="w-3 h-3"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── MISSION / VISION ── -->
+    <section id="mission" class="mv-panels" data-active="none">
+      <article class="mv-panel" data-panel="mission" tabindex="0" role="button" aria-label="Mission panel">
+        <span class="mv-chip mv-chip-mission">[ Mission ]</span>
+        <div class="mv-content">
+          <p class="text-charcoal/80 mt-6 leading-relaxed text-sm" style="max-width:58ch;">
+            To democratize the access to liquidity by designing financial systems that adapt to people — not ask them to adapt to the system. We create intuitive, inclusive tools that meet users on their terms, enabling businesses to reach untapped markets and individuals to access capital with clarity, confidence, and control.
+          </p>
+          <div class="mission-proof">
+            <div class="mission-abstract" aria-hidden="true">
+              <span class="rail r1"></span>
+              <span class="rail r2"></span>
+              <span class="rail r3"></span>
+              <span class="spine"></span>
+              <span class="beam"></span>
+              <span class="node n1"></span>
+              <span class="node n2"></span>
+              <span class="node n3"></span>
+              <span class="core"></span>
+            </div>
+            <p class="mission-quote">Standards above others &amp; our own results in your success.</p>
+          </div>
+          <a href="#" data-view-link="about" class="mv-about-link">About Us</a>
+        </div>
+      </article>
+
+      <article class="mv-panel" data-panel="vision" tabindex="0" role="button" aria-label="Vision panel">
+        <span class="mv-chip mv-chip-vision">[ Vision ]</span>
+        <div class="mv-content">
+          <p class="text-gray-600 mt-6 leading-relaxed text-sm" style="max-width:58ch;">
+            To build a world where liquidity is not a privilege, but a universally accessible tool — defined by the people, designed for the people, and delivered through trusted systems that empower progress.
+          </p>
+
+          <div class="mt-10">
+            <div class="h-line mb-8"></div>
+            <div class="grid grid-cols-2 gap-x-8 gap-y-8">
+            <div class="geo-item" tabindex="0">
+              <div class="geo-canvas">
+                <div class="prism-wrap" style="perspective:120px;">
+                  <div class="prism-face prism-front"></div>
+                  <div class="prism-face prism-back"></div>
+                  <div class="prism-face prism-side"></div>
+                  <div class="prism-axis"></div>
+                </div>
+              </div>
+              <div>
+                <div class="font-grotesk font-bold text-charcoal text-base">Transparency</div>
+                <div class="text-gray-400 text-xs tracking-wide mt-1">On-chain by default</div>
+              </div>
+            </div>
+
+            <div class="geo-item" tabindex="0">
+              <div class="geo-canvas">
+                <div class="rings-wrap">
+                  <div class="ring"></div>
+                  <div class="ring"></div>
+                  <div class="ring"></div>
+                  <div class="ring"></div>
+                </div>
+              </div>
+              <div>
+                <div class="font-grotesk font-bold text-charcoal text-base">Compliance</div>
+                <div class="text-gray-400 text-xs tracking-wide mt-1">Regulatory-ready</div>
+              </div>
+            </div>
+
+            <div class="geo-item" tabindex="0">
+              <div class="geo-canvas">
+                <div class="blocks-wrap">
+                  <div class="micro-block"></div>
+                  <div class="micro-block"></div>
+                  <div class="micro-block"></div>
+                  <div class="micro-block"></div>
+                  <div class="micro-block"></div>
+                </div>
+              </div>
+              <div>
+                <div class="font-grotesk font-bold text-charcoal text-base">Autonomy</div>
+                <div class="text-gray-400 text-xs tracking-wide mt-1">Agentic operations</div>
+              </div>
+            </div>
+
+            <div class="geo-item" tabindex="0">
+              <div class="geo-canvas">
+                <div class="scale-wrap">
+                  <div class="dot-grid">
+                    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                    <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                  </div>
+                  <div class="arrow-up">
+                    <div class="arrow-head"></div>
+                    <div class="arrow-shaft"></div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="font-grotesk font-bold text-charcoal text-base">Scale</div>
+                <div class="text-gray-400 text-xs tracking-wide mt-1">Institutional grade</div>
+              </div>
+            </div>
+            </div>
+          </div>
+          <a href="#" data-view-link="about" class="mv-about-link">About Us</a>
+        </div>
+      </article>
+    </section>
+  </div>
+
+  <div id="products-view" class="page-view">
+    <!-- ── HERO / PRODUCT SUITE ── -->
+    <section class="products-honeycomb-bg min-h-screen flex flex-col justify-center pt-14">
+      <div class="products-honeycomb-lights" aria-hidden="true"></div>
+      <div class="max-w-7xl mx-auto px-6 py-24">
+        <div class="reveal">
+          <span class="tag tag-sage">NFTi Product Suite · v4.5 Milestone</span>
+        </div>
+        <h1 class="reveal font-grotesk font-bold text-white mt-8 leading-none"
+            style="font-size: clamp(2.8rem, 7vw, 6.2rem); letter-spacing: -.02em;">
+          <span class="acronym-lockup">LAS</span> · <span class="acronym-lockup">LOS</span> · <span class="acronym-lockup">UNA</span> · <span class="acronym-lockup">UNO</span>
+        </h1>
+        <p class="reveal sub-glow mt-8 max-w-3xl leading-relaxed font-grotesk"
+           style="font-size: clamp(1rem, 1.5vw, 1.18rem);">
+          One coordinated product architecture that moves a loan from application to tokenized liquidity:
+          an Originator Pipeline (<span class="acronym-lockup">LAS</span> + <span class="acronym-lockup">LOS</span>) feeding a Liquidity &amp; Governance Engine (<span class="acronym-lockup">UNA</span> + <span class="acronym-lockup">UNO</span>).
+        </p>
+      </div>
+    </section>
+
+    <!-- ── FLOW OF VALUE ── -->
+    <section id="prod-mission" class="bg-charcoal py-24 border-t border-sage/10 border-b border-sage/10">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="reveal mb-10">
+          <span class="tag tag-sage">Flow of Value</span>
+          <h2 class="font-grotesk font-bold text-white mt-4"
+              style="font-size: clamp(1.9rem, 3.6vw, 3rem); letter-spacing:-.02em;">
+            From Application to Tokenized Governance
+          </h2>
+        </div>
+        <div class="reveal flow-wrap">
+          <div class="flow-lane"><div class="flow-token"></div></div>
+          <div class="flow-grid">
+            <div class="flow-step" tabindex="0"><b><span class="acronym-lockup">LAS</span></b><p class="text-sage/75 text-xs mt-3">Borrower application enters a structured digital intake channel.</p></div>
+            <div class="flow-step" tabindex="0"><b><span class="acronym-lockup">LOS</span></b><p class="text-sage/75 text-xs mt-3">Underwriting and origination produce lender-approved, traceable assets.</p></div>
+            <div class="flow-step" tabindex="0"><b><span class="acronym-lockup">UNA</span></b><p class="text-sage/75 text-xs mt-3">Approved assets are transformed into programmable liquidity primitives.</p></div>
+            <div class="flow-step" tabindex="0"><b><span class="acronym-lockup">UNO</span></b><p class="text-sage/75 text-xs mt-3">Governance rules, controls, and reporting operate continuously post-issuance.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PRODUCT ARCHITECTURE ── -->
+    <section id="prod-services" class="bg-white py-24">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="reveal mb-12">
+          <span class="tag tag-steel">NFTi Product Suite</span>
+          <h2 class="font-grotesk font-bold text-charcoal mt-4"
+              style="font-size: clamp(1.9rem, 3.8vw, 3rem); letter-spacing:-.02em;">
+            Architecture of Value Flow
+          </h2>
+          <p class="mt-3 text-sm font-mono tracking-widest" style="color:#2DA8FF;">
+            <span class="acronym-lockup">LAS</span> + <span class="acronym-lockup">LOS</span> = Originator Pipeline | <span class="acronym-lockup">UNA</span> + <span class="acronym-lockup">UNO</span> = Liquidity & Governance Engine
+          </p>
+        </div>
+        <div class="reveal grid md:grid-cols-2 gap-6">
+          <article class="product-node"><span class="tile-arrow" aria-hidden="true"><svg viewBox="0 0 84 22" focusable="false"><path class="arrow-base" d="M2 2 V8 H70 V12" pathLength="100"></path><path class="arrow-glow" d="M2 2 V8 H70 V12" pathLength="100"></path><g class="tip-group"><polygon class="tip-base" points="66,12 74,12 70,17"></polygon><polygon class="tip-glow" points="66,12 74,12 70,17"></polygon></g></svg></span><div class="product-acronym"><span class="acronym-lockup">LAS</span></div><div class="text-xs tracking-[0.2em] uppercase text-gray-400 mt-3">Loan Application System</div><h3 class="font-grotesk font-semibold text-charcoal text-xl mt-3">Structured Intake</h3><p class="text-gray-600 text-sm mt-3 leading-relaxed">Captures borrower intent, required data, and eligibility signals in a lender-ready structure.</p></article>
+          <article class="product-node"><span class="tile-arrow" aria-hidden="true"><svg viewBox="0 0 84 22" focusable="false"><path class="arrow-base" d="M2 2 V8 H70 V12" pathLength="100"></path><path class="arrow-glow" d="M2 2 V8 H70 V12" pathLength="100"></path><g class="tip-group"><polygon class="tip-base" points="66,12 74,12 70,17"></polygon><polygon class="tip-glow" points="66,12 74,12 70,17"></polygon></g></svg></span><div class="product-acronym"><span class="acronym-lockup">LOS</span></div><div class="text-xs tracking-[0.2em] uppercase text-gray-400 mt-3">Loan Origination System</div><h3 class="font-grotesk font-semibold text-charcoal text-xl mt-3">Origination Orchestration</h3><p class="text-gray-600 text-sm mt-3 leading-relaxed">Moves validated applications through underwriting, decisions, and close with operational control.</p></article>
+          <article class="product-node"><span class="tile-arrow" aria-hidden="true"><svg viewBox="0 0 84 22" focusable="false"><path class="arrow-base" d="M2 2 V8 H70 V12" pathLength="100"></path><path class="arrow-glow" d="M2 2 V8 H70 V12" pathLength="100"></path><g class="tip-group"><polygon class="tip-base" points="66,12 74,12 70,17"></polygon><polygon class="tip-glow" points="66,12 74,12 70,17"></polygon></g></svg></span><div class="product-acronym"><span class="acronym-lockup">UNA</span></div><div class="text-xs tracking-[0.2em] uppercase text-gray-400 mt-3">Unified Network Authority</div><h3 class="font-grotesk font-semibold text-charcoal text-xl mt-3">Audit &amp; Reference Control</h3><p class="text-gray-600 text-sm mt-3 leading-relaxed">The accountability layer where accountants, audits, and blockchain reference records are managed, and where UNA tokens can be purchased.</p></article>
+          <article class="product-node"><span class="tile-arrow" aria-hidden="true"><svg viewBox="0 0 84 22" focusable="false"><path class="arrow-base" d="M2 2 V8 H70 V12" pathLength="100"></path><path class="arrow-glow" d="M2 2 V8 H70 V12" pathLength="100"></path><g class="tip-group"><polygon class="tip-base" points="66,12 74,12 70,17"></polygon><polygon class="tip-glow" points="66,12 74,12 70,17"></polygon></g></svg></span><div class="product-acronym"><span class="acronym-lockup">UNO</span></div><div class="text-xs tracking-[0.2em] uppercase text-gray-400 mt-3">Unified Network Orchestrator</div><h3 class="font-grotesk font-semibold text-charcoal text-xl mt-3">Secondary Market Operations</h3><p class="text-gray-600 text-sm mt-3 leading-relaxed">Handles downstream execution across secondary market activity, lock desk processes, and orchestration of post-origination liquidity flows.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── AUDIENCE ENTRY POINTS ── -->
+    <section id="prod-friction" class="bg-charcoal py-24 border-t border-sage/10">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="reveal mb-10">
+          <span class="tag tag-sage">Audience Entry Points</span>
+          <h2 class="font-grotesk font-bold text-white mt-4"
+              style="font-size: clamp(1.9rem, 3.6vw, 3rem); letter-spacing:-.02em;">
+            Product Value by Stakeholder
+          </h2>
+        </div>
+        <div class="reveal flex flex-wrap gap-3 mb-8">
+          <button class="audience-tab active" data-audience-tab="investors">Investors</button>
+          <button class="audience-tab" data-audience-tab="mortgage">Mortgage Companies</button>
+          <button class="audience-tab" data-audience-tab="consumers">Consumers</button>
+        </div>
+        <div class="reveal suite-panel p-8">
+          <div class="audience-panel active" data-audience-panel="investors"><div class="text-sage-light font-mono text-xs tracking-[0.2em] uppercase">Investor View</div><h3 class="font-grotesk text-white text-2xl mt-3">Institutional-grade transparency from source to yield</h3><p class="text-sage/70 mt-4 max-w-3xl"><span class="acronym-lockup">LAS</span>/<span class="acronym-lockup">LOS</span> establish verified loan quality at origination. <span class="acronym-lockup">UNA</span> structures assets into compliant liquidity products, while <span class="acronym-lockup">UNO</span> enforces governance, reporting, and post-issuance controls.</p></div>
+          <div class="audience-panel" data-audience-panel="mortgage"><div class="text-sage-light font-mono text-xs tracking-[0.2em] uppercase">Originator View</div><h3 class="font-grotesk text-white text-2xl mt-3">Faster loan throughput with lower operational drag</h3><p class="text-sage/70 mt-4 max-w-3xl"><span class="acronym-lockup">LAS</span> digitizes borrower intake and qualification workflows. <span class="acronym-lockup">LOS</span> orchestrates origination and compliance handoff. <span class="acronym-lockup">UNA</span> creates downstream marketability while <span class="acronym-lockup">UNO</span> reduces governance overhead through automated controls.</p></div>
+          <div class="audience-panel" data-audience-panel="consumers"><div class="text-sage-light font-mono text-xs tracking-[0.2em] uppercase">Consumer View</div><h3 class="font-grotesk text-white text-2xl mt-3">Clearer borrowing pathways and broader capital access</h3><p class="text-sage/70 mt-4 max-w-3xl"><span class="acronym-lockup">LAS</span> simplifies onboarding and document collection. <span class="acronym-lockup">LOS</span> improves decision speed and communication. <span class="acronym-lockup">UNA</span>/<span class="acronym-lockup">UNO</span> expand capital pathways behind the scenes, helping lenders offer more responsive products with clearer status visibility.</p></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="about-view" class="page-view">
+    <section class="about-grid-bg min-h-screen pt-14 pb-24">
+      <div class="max-w-7xl mx-auto px-6 py-16">
+        <div class="reveal">
+          <span class="tag tag-sage">About NFTi LABS</span>
+        </div>
+        <h1 class="reveal font-grotesk font-bold text-white mt-7 leading-none"
+            style="font-size: clamp(2.6rem, 6vw, 5.2rem); letter-spacing:-.02em;">
+          Institutional Infrastructure<br/>for a Tokenized + Agentic Era.
+        </h1>
+        <p class="reveal mt-7 max-w-3xl text-sage/75 leading-relaxed"
+           style="font-size: clamp(.98rem, 1.2vw, 1.08rem);">
+          <span class="brand-lockup">NFTi L<span class="brand-abs">ABS</span></span> designs and operates digital financial rails that bridge
+          origination systems, tokenized liquidity, and governance automation. We partner with lenders, mortgage
+          operators, and institutional capital teams to turn fragmented workflows into unified, auditable, scalable systems.
+        </p>
+
+        <div class="reveal grid md:grid-cols-2 gap-6 mt-12">
+          <article class="about-card">
+            <div class="text-sage-light font-mono text-xs tracking-[0.2em] uppercase">Who We Serve</div>
+            <h3 class="font-grotesk text-white text-2xl mt-3">Investors, Mortgage Operators, Consumers</h3>
+            <p class="text-sage/70 text-sm mt-4 leading-relaxed">
+              We align product design to each stakeholder: verified performance and governance for investors,
+              operational acceleration for originators, and clearer access pathways for consumers.
+            </p>
+          </article>
+          <article class="about-card">
+            <div class="text-sage-light font-mono text-xs tracking-[0.2em] uppercase">Execution Model</div>
+            <h3 class="font-grotesk text-white text-2xl mt-3">Build, Integrate, Govern</h3>
+            <p class="text-sage/70 text-sm mt-4 leading-relaxed">
+              We deploy domain-specific architecture across onboarding, origination, tokenization, compliance,
+              and secondary market operations while preserving institutional controls.
+            </p>
+          </article>
+        </div>
+
+        <div class="reveal mt-12 about-card">
+          <div class="text-sage-light font-mono text-xs tracking-[0.2em] uppercase">Product Continuum</div>
+          <p class="mt-4 text-sm font-mono tracking-widest text-[#2DA8FF]">
+            <span class="acronym-lockup">LAS</span> + <span class="acronym-lockup">LOS</span> = Originator Pipeline |
+            <span class="acronym-lockup">UNA</span> + <span class="acronym-lockup">UNO</span> = Liquidity &amp; Governance Engine
+          </p>
+          <p class="text-sage/70 text-sm mt-4 leading-relaxed max-w-4xl">
+            This stack is designed to move capital from application to governed liquidity with a consistent
+            data spine and accountable control points at each stage.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ── FOOTER / CONTACT ── -->
+  <footer id="contact" class="bg-charcoal py-24">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid md:grid-cols-2 gap-16 mb-20">
+
+        <div class="reveal">
+          <div class="font-grotesk font-bold text-sage text-2xl tracking-widest uppercase mb-4"><span class="brand-lockup">NFTi L<span class="brand-abs">ABS</span></span></div>
+          <p class="text-sage/50 text-sm leading-relaxed max-w-xs">
+            Institutional PropTech &amp; FinTech infrastructure for a tokenized + agentic future.
+          </p>
+          <div class="mt-8 flex gap-4">
+            <a href="mailto:Adam.garza@silverhs.com"
+               class="w-9 h-9 border border-sage/30 flex items-center justify-center hover:border-sage transition-colors duration-200">
+              <i data-lucide="mail" class="w-4 h-4 text-sage/60"></i>
+            </a>
+            <a href="#"
+               class="w-9 h-9 border border-sage/30 flex items-center justify-center hover:border-sage transition-colors duration-200">
+              <i data-lucide="linkedin" class="w-4 h-4 text-sage/60"></i>
+            </a>
+            <a href="#"
+               class="w-9 h-9 border border-sage/30 flex items-center justify-center hover:border-sage transition-colors duration-200">
+              <i data-lucide="twitter" class="w-4 h-4 text-sage/60"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <span class="tag tag-sage mb-8 block">Request a Brief</span>
+          <form onsubmit="handleSubmit(event)" class="space-y-8">
+            <div class="grid grid-cols-2 gap-6">
+              <div><input type="text"  class="footer-input" placeholder="Full Name"     required /></div>
+              <div><input type="text"  class="footer-input" placeholder="Organization"          /></div>
+            </div>
+            <div><input type="email" class="footer-input" placeholder="Email Address"  required /></div>
+            <div>
+              <select class="footer-input" style="appearance:none;">
+                <option value="" disabled selected style="background:#1C2120;">Area of Interest</option>
+                <option style="background:#1C2120;">Blockchain Integration</option>
+                <option style="background:#1C2120;">Blockchain Strategy</option>
+                <option style="background:#1C2120;">Agentic Integration</option>
+                <option style="background:#1C2120;">General Inquiry</option>
+              </select>
+            </div>
+            <div>
+              <textarea class="footer-input resize-none" rows="3"
+                        placeholder="Brief description of your project or goal"></textarea>
+            </div>
+            <button type="submit"
+              class="inline-flex items-center gap-3 bg-sage text-charcoal font-grotesk font-semibold text-sm tracking-widest uppercase px-8 py-3 hover:bg-sage-light transition-colors duration-200">
+              Submit Brief
+              <i data-lucide="send" class="w-4 h-4"></i>
+            </button>
+          </form>
+        </div>
+
+      </div>
+      <div class="border-t border-sage/10 pt-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div class="text-sage/30 text-xs font-mono tracking-wide">© 2024 <span class="brand-lockup">NFTi L<span class="brand-abs">ABS</span></span>. All rights reserved.</div>
+        <div class="text-sage/30 text-xs font-mono tracking-wide">
+          <a href="mailto:Adam.garza@silverhs.com" class="hover:text-sage transition-colors duration-200">
+            Adam.garza@silverhs.com
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div><!-- /site -->
+
+<!-- Toast -->
+<div id="toast"
+     style="position:fixed;bottom:2rem;right:2rem;z-index:99997;display:none;
+            background:#7E908C;color:#1C2120;padding:1rem 1.5rem;
+            font-family:'Space Grotesk',sans-serif;font-size:.8rem;
+            letter-spacing:.08em;border-left:3px solid #1C2120;">
+  Brief submitted. We'll be in touch.
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     SCRIPTS — NFTi LABS v4.5
+     No sound. No Web Audio. No media.
+══════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ════════════════════════════════════════════
+   1. TYPEWRITER TERMINAL
+   Lines appear at: 0s / 3.5s / 7.0s / 10.5s
+   Each line is typed char-by-char with the block
+   cursor following at the end of the live text.
+   TOKENIZE button reveals exactly 1.5s after
+   line 4 finishes typing.
+════════════════════════════════════════════ */
+const LINES = [
+  { tag: '[SYSTEM]', pad: ' ', text: 'Initializing Blockchain Node...' },
+  { tag: '[DATA]',   pad: '  ', text: 'Syncing Real Estate Indices...' },
+  { tag: '[AI]',     pad: '   ', text: 'Calibrating Agentic Models...' },
+  { tag: '[STATUS]', pad: ' ', text: 'System Ready.' },
+];
+const LINE_DELAYS  = [0, 3500, 7000, 10500]; /* ms before typing starts for each line */
+const TYPE_SPEED   = 38;                      /* ms per character */
+const BUTTON_DELAY = 1500;                    /* ms after last line finishes */
+
+function setPreloaderLogoIReady(isReadyPhase) {
+  const mark = document.getElementById('preloader-logo-i');
+  if (!mark) return;
+  mark.style.color = '#7E908C';
+}
+
+function initPreloaderTerminal() {
+  const terminal = document.getElementById('terminal');
+  if (!terminal) return;
+  let activeCursor = null;
+  setPreloaderLogoIReady(false);
+
+  LINES.forEach((lineData, idx) => {
+    setTimeout(() => {
+      if (activeCursor) activeCursor.style.display = 'none';
+
+      /* Build the DOM row */
+      const row = document.createElement('div');
+      row.className = 'term-line active';
+
+      /* Tag span */
+      const tagSpan = document.createElement('span');
+      tagSpan.className = 'term-tag';
+      tagSpan.textContent = lineData.tag;
+      row.appendChild(tagSpan);
+
+      /* Padding text node */
+      row.appendChild(document.createTextNode(lineData.pad));
+
+      /* Typed content span */
+      const contentSpan = document.createElement('span');
+      row.appendChild(contentSpan);
+
+      /* Inline block cursor — always appended at end */
+      const cursorEl = document.createElement('span');
+      cursorEl.className = 'term-cursor';
+      row.appendChild(cursorEl);
+      activeCursor = cursorEl;
+
+      terminal.appendChild(row);
+
+      /* Type out characters */
+      const chars = lineData.text.split('');
+      let   charIdx = 0;
+      const typeNext = () => {
+        if (charIdx < chars.length) {
+          contentSpan.textContent += chars[charIdx++];
+          setTimeout(typeNext, TYPE_SPEED);
+        } else {
+          if (idx === LINES.length - 1) {
+            row.classList.add('line-ready');
+            setPreloaderLogoIReady(true);
+            /* Last line — cursor stays blinking; reveal button 1.5s later */
+            setTimeout(() => {
+              const wrap = document.getElementById('btn-wrap');
+              if (wrap) wrap.classList.add('visible');
+              setPreloaderLogoIReady(false);
+            }, BUTTON_DELAY);
+          }
+        }
+      };
+      typeNext();
+    }, LINE_DELAYS[idx]);
+  });
+}
+
+function initTokenizeProximityGlow() {
+  const wrap = document.getElementById('btn-wrap');
+  if (!wrap) return;
+  if (wrap.dataset.proximityBound === '1') return;
+  wrap.dataset.proximityBound = '1';
+
+  let mx = window.innerWidth * 0.5;
+  let my = window.innerHeight * 0.5;
+  let ticking = false;
+
+  const clamp = (v) => Math.max(0, Math.min(1, v));
+  const setGlow = (t) => {
+    const eased = t * t;
+    const opacity = 0.12 + (0.52 * eased);
+    const blur = 15 - (5 * eased);
+    const scale = 1 + (0.045 * eased);
+    wrap.style.setProperty('--halo-opacity', opacity.toFixed(3));
+    wrap.style.setProperty('--halo-blur', `${blur.toFixed(2)}px`);
+    wrap.style.setProperty('--halo-scale', scale.toFixed(3));
+  };
+
+  const update = () => {
+    ticking = false;
+    if (!wrap.classList.contains('visible')) {
+      setGlow(0);
+      return;
+    }
+    const r = wrap.getBoundingClientRect();
+    const cx = r.left + (r.width * 0.5);
+    const cy = r.top + (r.height * 0.5);
+    const dist = Math.hypot(mx - cx, my - cy);
+    const maxDist = Math.max(220, Math.hypot(r.width, r.height) * 3.2);
+    const t = clamp(1 - (dist / maxDist));
+    setGlow(t);
+  };
+
+  const queue = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(update);
+  };
+
+  window.addEventListener('mousemove', (e) => {
+    mx = e.clientX;
+    my = e.clientY;
+    queue();
+  }, { passive: true });
+  window.addEventListener('resize', queue, { passive: true });
+  window.addEventListener('scroll', queue, { passive: true });
+  document.addEventListener('visibilitychange', queue);
+  const mo = new MutationObserver(queue);
+  mo.observe(wrap, { attributes: true, attributeFilter: ['class'] });
+  setGlow(0);
+  queue();
+}
+
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', () => {
+    initTokenizeProximityGlow();
+    initPreloaderTerminal();
+  }, { once: true });
+} else {
+  initTokenizeProximityGlow();
+  initPreloaderTerminal();
+}
+
+
+/* ════════════════════════════════════════════
+   2. BLOCKCHAIN CURSOR
+   Solid block → wireframe cube on hover.
+   Targets: links, buttons, geo-items.
+════════════════════════════════════════════ */
+(function initCursor() {
+  const cursor = document.getElementById('cursor-block');
+  if (!cursor) return;
+  if (window.matchMedia('(hover: none), (pointer: coarse)').matches) {
+    cursor.style.display = 'none';
+    return;
+  }
+  if (!cursor.querySelector('.cube-back')) {
+    const backFace = document.createElement('span');
+    backFace.className = 'cube-part cube-back';
+    cursor.appendChild(backFace);
+    ['e1', 'e2', 'e3', 'e4'].forEach(name => {
+      const edge = document.createElement('span');
+      edge.className = `cube-part cube-edge ${name}`;
+      cursor.appendChild(edge);
+    });
+  }
+
+  const HOVER_SEL = 'a, button, [role="button"], .geo-item, input, textarea, select, label';
+
+  let mx = -200, my = -200, rafPending = false;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    if (!rafPending) {
+      rafPending = true;
+      requestAnimationFrame(() => {
+        cursor.style.transform = `translate3d(${mx}px,${my}px,0)`;
+        rafPending = false;
+      });
+    }
+  }, { passive: true });
+
+  document.addEventListener('mouseleave', () => { cursor.style.opacity = '0'; });
+  document.addEventListener('mouseenter', () => { cursor.style.opacity = '1'; });
+
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest(HOVER_SEL)) cursor.classList.add('is-hover');
+  });
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest(HOVER_SEL)) cursor.classList.remove('is-hover');
+  });
+
+  document.addEventListener('mousedown', () => { cursor.style.opacity = '.45'; });
+  document.addEventListener('mouseup',   () => { cursor.style.opacity = '1';  });
+})();
+
+
+/* ════════════════════════════════════════════
+   3. BLUE-SQUARE ZOOM-THROUGH TRANSITION (v5.0.2)
+   ─────────────────────────────────────────────
+   Restored v4.5's per-cell worldScale approach —
+   each grid cell is manually repositioned outward
+   from fcx/fcy as worldScale grows. This is what
+   produced the original "zooming through the grid"
+   look. Fixed from v4.5:
+   · No hard if/return phase cuts — single elapsed
+     clock drives all phases simultaneously.
+   · ZOOM and BREAKTHROUGH are fully separated.
+     Burst effects only fire during BREAKTHROUGH,
+     not embedded inside ZOOM at 78%.
+   · Site is revealed at the start (behind canvas)
+     exactly as v4.5 did — no delayed reveal.
+
+   SEQUENCE (ms):
+     0 →  660   Morph: tiles snap to 50px grid
+   660 →  880   Hold: clean grid visible
+   880 → 1240   Highlight: focus cell ramps blue
+  1240 → 2500   Zoom: worldScale 1→12.5 (easeIn³)
+  2500 → 2820   Breakthrough: worldScale 12.5→19.9,
+                streaks, denser blue glow, site revealed
+════════════════════════════════════════════ */
+function startDisintegration() {
+  const preloader = document.getElementById('preloader');
+  const canvas    = document.getElementById('scatter-canvas');
+  const site      = document.getElementById('site');
+  if (!preloader || !site || !canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  const W   = canvas.width  = window.innerWidth;
+  const H   = canvas.height = window.innerHeight;
+  canvas.style.display = 'block';
+  preloader.classList.add('transitioning');
+
+  /* Reveal site immediately behind canvas (v4.5 behaviour) */
+  preloader.style.display = 'none';
+  site.style.display      = 'block';
+  site.style.opacity      = '1';
+
+  /* ── Helpers ── */
+  const clamp    = (v) => Math.max(0, Math.min(1, v));
+  const easeOut  = (t) => 1 - Math.pow(1 - clamp(t), 3);
+  const easeIn   = (t) => Math.pow(clamp(t), 3);
+  const easeInOut = (t) => {
+    const x = clamp(t);
+    return x < 0.5 ? 4*x*x*x : 1 - Math.pow(-2*x+2, 3)/2;
+  };
+
+  /* ── Grid setup ── */
+  const GRID = 50;
+  const COLS = 70, ROWS = 70;
+  const TW = W / COLS, TH = H / ROWS;
+  const tiles = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const sx = c * TW, sy = r * TH;
+      tiles.push({ sx, sy,
+        ex: Math.round(sx / GRID) * GRID,
+        ey: Math.round(sy / GRID) * GRID });
+    }
+  }
+
+  const GRID_COLS = Math.ceil(W / GRID) + 2;
+  const GRID_ROWS = Math.ceil(H / GRID) + 2;
+  const gridCells = [];
+  for (let gy = -1; gy < GRID_ROWS - 1; gy++) {
+    for (let gx = -1; gx < GRID_COLS - 1; gx++) {
+      gridCells.push({ x: gx * GRID, y: gy * GRID, gx, gy });
+    }
+  }
+
+  /* Focus cell — slightly off-centre like v4.5 */
+  const centerGX = Math.round((W / GRID) * 0.56);
+  const centerGY = Math.round((H / GRID) * 0.46);
+  const pick     = Math.floor(Math.random() * 5) - 2;
+  const focusGX  = centerGX + pick;
+  const focusGY  = centerGY + (pick % 2);
+  const fcx      = focusGX * GRID + GRID / 2;
+  const fcy      = focusGY * GRID + GRID / 2;
+
+  /* ── Phase timing (ms) ── */
+  const T_MORPH  = 660;
+  const T_HOLD   = 220;
+  const T_HIGH   = 360;
+  const T_ZOOM   = 1400;
+  const T_BURST  = 280;
+  const ZOOM_START = T_MORPH + T_HOLD + T_HIGH;
+  const ZOOM_END   = ZOOM_START + T_ZOOM;
+  const TOTAL      = ZOOM_END + T_BURST;
+
+  /* Scale needed so the blue cell's size = screen diagonal — guarantees
+     it fully covers the canvas. Adding ×1.4 so edges race well past. */
+  const SCREEN_DIAG     = Math.hypot(W, H);
+  const ZOOM_SCALE_MAX  = (SCREEN_DIAG / GRID) * 1.4;
+  const BURST_SCALE_MAX = ZOOM_SCALE_MAX * 1.28;
+
+  const drawBaseGrid = (alpha) => {
+    if (alpha <= 0) return;
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = 'rgba(126,144,140,1)';
+    ctx.lineWidth   = 1;
+    for (let gx = 0; gx <= W; gx += GRID) {
+      ctx.beginPath(); ctx.moveTo(gx + 0.5, 0); ctx.lineTo(gx + 0.5, H); ctx.stroke();
+    }
+    for (let gy = 0; gy <= H; gy += GRID) {
+      ctx.beginPath(); ctx.moveTo(0, gy + 0.5); ctx.lineTo(W, gy + 0.5); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  };
+
+  const t0 = performance.now();
+
+  function draw(now) {
+    ctx.clearRect(0, 0, W, H);
+    const elapsed = now - t0;
+
+    /* ── MORPH: fine tiles snap to 50px grid ── */
+    if (elapsed < T_MORPH) {
+      const p = easeOut(elapsed / T_MORPH);
+      for (let i = 0; i < tiles.length; i++) {
+        const t = tiles[i];
+        const x    = t.sx + (t.ex - t.sx) * p;
+        const y    = t.sy + (t.ey - t.sy) * p;
+        const size = TW + (GRID - TW) * p;
+        ctx.globalAlpha = 0.95 - 0.88 * p;
+        ctx.fillStyle   = '#1C2120';
+        ctx.fillRect(x, y, size + 0.35, size + 0.35);
+      }
+      drawBaseGrid(Math.max(0, (p - 0.4) / 0.6) * 0.18);
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(draw);
+      return;
+    }
+
+    /* ── HOLD: clean grid ── */
+    if (elapsed < T_MORPH + T_HOLD) {
+      drawBaseGrid(0.16);
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(draw);
+      return;
+    }
+
+    /* ── HIGHLIGHT: focus cell ramps in + infection spreads outward ── */
+    if (elapsed < ZOOM_START) {
+      const hp = easeInOut((elapsed - T_MORPH - T_HOLD) / T_HIGH);
+      /* Max Manhattan distance across the grid */
+      const maxDist = GRID_COLS + GRID_ROWS;
+
+      /* Draw each grid cell individually so we can tint by infection */
+      for (let i = 0; i < gridCells.length; i++) {
+        const g    = gridCells[i];
+        const dist = Math.abs(g.gx - focusGX) + Math.abs(g.gy - focusGY);
+        if (dist === 0) continue; /* focus cell drawn separately below */
+        /* Infection threshold: cells closer to focus infect sooner.
+           At hp=0 nothing infected. At hp=1 cells up to ~8 away are fully blue. */
+        const threshold = dist / (maxDist * 0.28);   /* 0.28 → infection reaches ~8 cells at hp=1 */
+        const infect    = clamp((hp - threshold) / 0.35); /* 0.35 = spread softness */
+        /* Interpolate sage → steel-blue stroke */
+        const sr = Math.round(126 + (45  - 126) * infect);
+        const sg = Math.round(144 + (168 - 144) * infect);
+        const sb = Math.round(140 + (255 - 140) * infect);
+        const strokeA = 0.14 + infect * 0.22;
+        ctx.globalAlpha = strokeA;
+        ctx.strokeStyle = `rgb(${sr},${sg},${sb})`;
+        ctx.lineWidth   = 1;
+        ctx.strokeRect(g.x + 0.5, g.y + 0.5, GRID - 1, GRID - 1);
+        /* Faint fill for deeply infected cells */
+        if (infect > 0.5) {
+          ctx.globalAlpha = (infect - 0.5) * 0.18;
+          ctx.fillStyle   = `rgb(${sr},${sg},${sb})`;
+          ctx.fillRect(g.x, g.y, GRID, GRID);
+        }
+      }
+      ctx.globalAlpha = 1;
+
+      /* Focus cell */
+      const x = focusGX * GRID, y = focusGY * GRID;
+      ctx.fillStyle   = `rgba(45,168,255,${0.14 + hp * 0.70})`;
+      ctx.fillRect(x, y, GRID, GRID);
+      ctx.strokeStyle = 'rgba(45,168,255,.98)';
+      ctx.lineWidth   = 1.5;
+      ctx.strokeRect(x + 0.5, y + 0.5, GRID-1, GRID-1);
+      ctx.shadowBlur  = 24 + hp * 26;
+      ctx.shadowColor = `rgba(45,168,255,${0.10 + hp * 0.55})`;
+      ctx.strokeRect(x + 1.5, y + 1.5, GRID-3, GRID-3);
+      ctx.shadowBlur  = 0;
+      requestAnimationFrame(draw);
+      return;
+    }
+
+    /* ── ZOOM: worldScale expands, grid flies outward ── */
+    if (elapsed < ZOOM_END) {
+      /* easeIn power-4 — slow start so you clearly see the small blue square,
+         then accelerates hard so the edges race past you */
+      const zpRaw      = (elapsed - ZOOM_START) / T_ZOOM;
+      const zp         = clamp(zpRaw * zpRaw * zpRaw * zpRaw);   /* ^4 */
+      const worldScale = 1 + zp * ZOOM_SCALE_MAX;
+      const cellSize   = GRID * worldScale;
+      /* How far the cell edge has passed the screen edge (0 = just touching, 1 = well past) */
+      const pastEdge   = clamp((cellSize / 2 - Math.min(W, H) / 2) / (SCREEN_DIAG * 0.5));
+      const baseAlpha  = 0.18 * (1 - clamp(zpRaw * 2));   /* grid fades fast */
+
+      for (let i = 0; i < gridCells.length; i++) {
+        const g       = gridCells[i];
+        const isFocus = g.gx === focusGX && g.gy === focusGY;
+        const cx      = g.x + GRID / 2;
+        const cy      = g.y + GRID / 2;
+        const tx      = fcx + (cx - fcx) * worldScale;
+        const ty      = fcy + (cy - fcy) * worldScale;
+        const size    = GRID * worldScale;
+        const rx      = tx - size / 2;
+        const ry      = ty - size / 2;
+        if (rx > W+160 || ry > H+160 || rx+size < -160 || ry+size < -160) continue;
+
+        if (isFocus) {
+          ctx.globalAlpha = 1;
+          /* Solid blue — stays opaque throughout so it reads as a portal */
+          ctx.fillStyle = 'rgba(45,168,255,1)';
+          ctx.fillRect(rx, ry, size, size);
+          /* Border only visible while cell is still smaller than screen */
+          if (pastEdge < 0.3) {
+            const bA = 1 - pastEdge / 0.3;
+            ctx.globalAlpha  = bA;
+            ctx.shadowBlur   = 36 * bA;
+            ctx.shadowColor  = 'rgba(45,168,255,.68)';
+            ctx.strokeStyle  = 'rgba(45,168,255,1)';
+            ctx.lineWidth    = Math.max(1, 2 / (1 + zp*0.8));
+            ctx.strokeRect(rx+0.75, ry+0.75, size-1.5, size-1.5);
+            ctx.shadowBlur   = 0;
+            ctx.globalAlpha  = 1;
+          }
+        } else {
+          if (baseAlpha > 0.005) {
+            /* Infection: as zoom progresses, surrounding cells' outlines
+               shift from sage → steel-blue based on distance from focus.
+               Closer cells infect first, infection wave radiates outward. */
+            const dist    = Math.abs(g.gx - focusGX) + Math.abs(g.gy - focusGY);
+            const maxDist = GRID_COLS + GRID_ROWS;
+            const threshold = dist / (maxDist * 0.45);
+            const infect    = clamp((zpRaw - threshold) / 0.25);
+            const sr = Math.round(126 + (45  - 126) * infect);
+            const sg = Math.round(144 + (168 - 144) * infect);
+            const sb = Math.round(140 + (255 - 140) * infect);
+            ctx.globalAlpha = baseAlpha + infect * 0.18;
+            ctx.lineWidth   = Math.max(1, 1 / (1 + zp*0.5));
+            ctx.strokeStyle = `rgb(${sr},${sg},${sb})`;
+            ctx.strokeRect(rx+0.5, ry+0.5, size-1, size-1);
+            /* Faint blue fill bleeds in on deeply infected cells */
+            if (infect > 0.6) {
+              ctx.globalAlpha = (infect - 0.6) * 0.22;
+              ctx.fillStyle   = `rgb(${sr},${sg},${sb})`;
+              ctx.fillRect(rx, ry, size, size);
+            }
+          }
+        }
+      }
+
+      /* Blue flood — monotonic ramp (no pulse), denser as zoom progresses */
+      if (pastEdge > 0) {
+        const flood = clamp((zpRaw * 0.45) + (pastEdge * 0.85));
+        ctx.globalAlpha = 0.06 + (0.92 * flood);
+        ctx.fillStyle   = 'rgba(45,168,255,1)';
+        ctx.fillRect(0, 0, W, H);
+        ctx.globalAlpha = 1;
+      }
+
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(draw);
+      return;
+    }
+
+    /* ── BREAKTHROUGH: keep blue, no white flash pulse ── */
+    if (elapsed < TOTAL) {
+      const bp = easeInOut((elapsed - ZOOM_END) / T_BURST);
+      /* Keep tone locked to steel-blue, only increase density */
+      const r = 45;
+      const g = 168;
+      ctx.globalAlpha = 1;
+      ctx.fillStyle   = `rgb(${r},${g},255)`;
+      ctx.fillRect(0, 0, W, H);
+      /* Additional blue glow grows steadily through the end */
+      ctx.globalAlpha = 0.18 + (0.62 * bp);
+      ctx.fillStyle   = 'rgba(45,168,255,1)';
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(draw);
+      return;
+    }
+
+    /* ── DONE ── */
+    canvas.style.display = 'none';
+    initSite();
+  }
+
+  requestAnimationFrame(draw);
+}
+
+let activeView = 'home';
+let viewTransitionBusy = false;
+
+function setActiveView(view) {
+  const home = document.getElementById('home-view');
+  const products = document.getElementById('products-view');
+  const about = document.getElementById('about-view');
+  if (!home || !products || !about) return;
+  home.classList.toggle('active', view === 'home');
+  products.classList.toggle('active', view === 'products');
+  about.classList.toggle('active', view === 'about');
+  activeView = view;
+  window.scrollTo(0, 0);
+  if (view === 'products' || view === 'about') {
+    requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
+  }
+}
+
+function runProductsTransition(onComplete) {
+  const canvas = document.getElementById('scatter-canvas');
+  if (!canvas) {
+    if (onComplete) onComplete();
+    return;
+  }
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width  = window.innerWidth;
+  const H = canvas.height = window.innerHeight;
+  canvas.style.display = 'block';
+
+  const CELL = 30;
+  const cols = Math.ceil(W / CELL);
+  const rows = Math.ceil(H / CELL);
+  const cells = [];
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+      const nx = x / Math.max(1, cols - 1);
+      const ny = y / Math.max(1, rows - 1);
+      const jitter = ((x * 17 + y * 31) % 11) / 110;
+      cells.push({ x: x * CELL, y: y * CELL, nx, ny, jitter });
+    }
+  }
+
+  const LOCK_MS = 280;
+  const WIPE_MS = 920;
+  const REVEAL_MS = 520;
+  const TOTAL = LOCK_MS + WIPE_MS + REVEAL_MS;
+  const t0 = performance.now();
+  let swapped = false;
+
+  const clamp = (v) => Math.max(0, Math.min(1, v));
+  const easeOut = (t) => 1 - Math.pow(1 - clamp(t), 3);
+  const drawGrid = (alpha) => {
+    if (alpha <= 0) return;
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = 'rgba(126,144,140,1)';
+    ctx.lineWidth = 1;
+    for (let gx = 0; gx <= W; gx += CELL) {
+      ctx.beginPath();
+      ctx.moveTo(gx + 0.5, 0);
+      ctx.lineTo(gx + 0.5, H);
+      ctx.stroke();
+    }
+    for (let gy = 0; gy <= H; gy += CELL) {
+      ctx.beginPath();
+      ctx.moveTo(0, gy + 0.5);
+      ctx.lineTo(W, gy + 0.5);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  };
+
+  function draw(now) {
+    ctx.clearRect(0, 0, W, H);
+    const elapsed = now - t0;
+
+    if (elapsed < LOCK_MS) {
+      const p = easeOut(elapsed / LOCK_MS);
+      ctx.globalAlpha = 0.12 + 0.22 * p;
+      ctx.fillStyle = '#1C2120';
+      ctx.fillRect(0, 0, W, H);
+      requestAnimationFrame(draw);
+      return;
+    }
+
+    if (elapsed < LOCK_MS + WIPE_MS) {
+      const p = easeOut((elapsed - LOCK_MS) / WIPE_MS);
+      /* Slightly lighter field so dark pixel blocks are visibly distinct */
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = '#232A29';
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#161A19';
+      for (let i = 0; i < cells.length; i++) {
+        const c = cells[i];
+        const threshold = c.nx * 0.83 + c.jitter + c.ny * 0.035;
+        if (threshold <= p) {
+          ctx.fillRect(c.x, c.y, CELL + 0.8, CELL + 0.8);
+        } else if (threshold <= p + 0.05) {
+          /* Frontier highlight to make wipe progression readable */
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = 'rgba(45,168,255,.32)';
+          ctx.strokeRect(c.x + 0.5, c.y + 0.5, CELL - 1, CELL - 1);
+        }
+      }
+      const scanX = Math.min(W, p * W);
+      ctx.fillStyle = 'rgba(45,168,255,.14)';
+      ctx.fillRect(Math.max(0, scanX - 20), 0, 20, H);
+      ctx.strokeStyle = 'rgba(45,168,255,.98)';
+      ctx.lineWidth = 3;
+      ctx.shadowBlur = 18;
+      ctx.shadowColor = 'rgba(45,168,255,.55)';
+      ctx.beginPath();
+      ctx.moveTo(scanX + 0.5, 0);
+      ctx.lineTo(scanX + 0.5, H);
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      if (!swapped && p > 0.62) {
+        swapped = true;
+        if (onComplete) onComplete();
+      }
+      requestAnimationFrame(draw);
+      return;
+    }
+
+    if (elapsed < TOTAL) {
+      const p = clamp((elapsed - LOCK_MS - WIPE_MS) / REVEAL_MS);
+      const fade = 1 - p;
+      ctx.globalAlpha = 0.92 * fade;
+      ctx.fillStyle = '#1C2120';
+      ctx.fillRect(0, 0, W, H);
+      requestAnimationFrame(draw);
+      return;
+    }
+
+    canvas.style.display = 'none';
+    ctx.clearRect(0, 0, W, H);
+    if (!swapped && onComplete) onComplete();
+  }
+
+  requestAnimationFrame(draw);
+}
+
+function runAboutTransition(onComplete) {
+  const canvas = document.getElementById('scatter-canvas');
+  if (!canvas) {
+    if (onComplete) onComplete();
+    return;
+  }
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width  = window.innerWidth;
+  const H = canvas.height = window.innerHeight;
+  canvas.style.display = 'block';
+
+  const CELL = 30;
+  const cols = Math.ceil(W / CELL);
+  const rows = Math.ceil(H / CELL);
+  const cells = [];
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+      const cx = x * CELL + CELL * 0.5;
+      const cy = y * CELL + CELL * 0.5;
+      const jitter = ((x * 19 + y * 23) % 13) / 90;
+      cells.push({ x: x * CELL, y: y * CELL, cx, cy, jitter });
+    }
+  }
+
+  const cx0 = W * 0.5;
+  const cy0 = H * 0.5;
+  const angle = -16 * (Math.PI / 180);
+  const dir = { x: Math.cos(angle), y: Math.sin(angle) };
+  const nrm = { x: -dir.y, y: dir.x };
+  const maxOff = Math.abs((0 - cx0) * nrm.x + (0 - cy0) * nrm.y) + Math.max(W, H);
+
+  const LOCK_MS = 320;
+  const WIPE_MS = 1080;
+  const REVEAL_MS = 560;
+  const TOTAL = LOCK_MS + WIPE_MS + REVEAL_MS;
+  const t0 = performance.now();
+  let swapped = false;
+
+  const clamp = (v) => Math.max(0, Math.min(1, v));
+  const easeOut = (t) => 1 - Math.pow(1 - clamp(t), 3);
+  const drawGrid = (alpha) => {
+    if (alpha <= 0) return;
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = 'rgba(126,144,140,1)';
+    ctx.lineWidth = 1;
+    for (let gx = 0; gx <= W; gx += CELL) {
+      ctx.beginPath();
+      ctx.moveTo(gx + 0.5, 0);
+      ctx.lineTo(gx + 0.5, H);
+      ctx.stroke();
+    }
+    for (let gy = 0; gy <= H; gy += CELL) {
+      ctx.beginPath();
+      ctx.moveTo(0, gy + 0.5);
+      ctx.lineTo(W, gy + 0.5);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  };
+  const drawLineAtOffset = (off, alpha) => {
+    const px = cx0 + nrm.x * off;
+    const py = cy0 + nrm.y * off;
+    const L = Math.max(W, H) * 1.8;
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = 'rgba(57,255,122,1)';
+    ctx.lineWidth = 3;
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = 'rgba(57,255,122,.55)';
+    ctx.beginPath();
+    ctx.moveTo(px - dir.x * L, py - dir.y * L);
+    ctx.lineTo(px + dir.x * L, py + dir.y * L);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.globalAlpha = 1;
+  };
+
+  function draw(now) {
+    ctx.clearRect(0, 0, W, H);
+    const elapsed = now - t0;
+
+    if (elapsed < LOCK_MS) {
+      const p = easeOut(elapsed / LOCK_MS);
+      ctx.globalAlpha = 0.14 + 0.20 * p;
+      ctx.fillStyle = '#1C2120';
+      ctx.fillRect(0, 0, W, H);
+      drawLineAtOffset(0, 0.22 + 0.18 * p);
+      requestAnimationFrame(draw);
+      return;
+    }
+
+    if (elapsed < LOCK_MS + WIPE_MS) {
+      const p = easeOut((elapsed - LOCK_MS) / WIPE_MS);
+      const spread = maxOff * p;
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = '#232A29';
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#161A19';
+
+      for (let i = 0; i < cells.length; i++) {
+        const c = cells[i];
+        const off = Math.abs((c.cx - cx0) * nrm.x + (c.cy - cy0) * nrm.y);
+        const reach = spread * (0.86 + c.jitter);
+        if (off <= reach) {
+          ctx.fillRect(c.x, c.y, CELL + 0.8, CELL + 0.8);
+        } else if (Math.abs(off - spread) < CELL * 0.9) {
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = 'rgba(57,255,122,.34)';
+          ctx.strokeRect(c.x + 0.5, c.y + 0.5, CELL - 1, CELL - 1);
+        }
+      }
+      drawLineAtOffset(spread, 0.94);
+      drawLineAtOffset(-spread, 0.94);
+
+      if (!swapped && p > 0.60) {
+        swapped = true;
+        if (onComplete) onComplete();
+      }
+      requestAnimationFrame(draw);
+      return;
+    }
+
+    if (elapsed < TOTAL) {
+      const p = clamp((elapsed - LOCK_MS - WIPE_MS) / REVEAL_MS);
+      const fade = 1 - p;
+      ctx.globalAlpha = 0.9 * fade;
+      ctx.fillStyle = '#1C2120';
+      ctx.fillRect(0, 0, W, H);
+      const spread = maxOff * (0.96 + 0.04 * p);
+      drawLineAtOffset(spread, 0.55 * fade);
+      drawLineAtOffset(-spread, 0.55 * fade);
+      requestAnimationFrame(draw);
+      return;
+    }
+
+    canvas.style.display = 'none';
+    ctx.clearRect(0, 0, W, H);
+    if (!swapped && onComplete) onComplete();
+  }
+
+  requestAnimationFrame(draw);
+}
+
+function transitionToView(targetView) {
+  if (!targetView || targetView === activeView || viewTransitionBusy) return;
+  if (targetView === 'products') {
+    viewTransitionBusy = true;
+    runProductsTransition(() => {
+      setActiveView('products');
+      viewTransitionBusy = false;
+    });
+    return;
+  }
+  if (targetView === 'about') {
+    viewTransitionBusy = true;
+    runAboutTransition(() => {
+      setActiveView('about');
+      viewTransitionBusy = false;
+    });
+    return;
+  }
+  if (targetView === 'home') {
+    setActiveView(targetView);
+    return;
+  }
+}
+
+function initViewNavigation() {
+  document.querySelectorAll('[data-view-link]').forEach(link => {
+    if (link.dataset.viewBound === '1') return;
+    link.dataset.viewBound = '1';
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      transitionToView(link.dataset.viewLink);
+    });
+  });
+}
+
+function initMissionVisionPanels() {
+  const wrap = document.querySelector('#mission.mv-panels');
+  if (!wrap) return;
+  const panels = Array.from(wrap.querySelectorAll('.mv-panel[data-panel]'));
+  if (panels.length < 2) return;
+
+  let pinned = null;
+  const setActive = (key) => {
+    wrap.dataset.active = key || 'none';
+  };
+
+  const preview = (key) => {
+    if (pinned) return;
+    setActive(key);
+  };
+
+  panels.forEach((panel) => {
+    const key = panel.dataset.panel;
+    panel.addEventListener('mouseenter', () => preview(key));
+    panel.addEventListener('focusin', () => preview(key));
+    panel.addEventListener('click', (e) => {
+      if (e.target.closest('.geo-item, a, button, input, textarea, select')) return;
+      if (pinned === key) {
+        pinned = null;
+        setActive('none');
+      } else {
+        pinned = key;
+        setActive(key);
+      }
+    });
+    panel.addEventListener('keydown', (e) => {
+      if (e.target !== panel) return;
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        panel.click();
+      }
+    });
+  });
+
+  wrap.addEventListener('mouseleave', () => {
+    if (!pinned) setActive('none');
+  });
+
+  wrap.addEventListener('focusout', (e) => {
+    if (pinned) return;
+    if (!wrap.contains(e.relatedTarget)) setActive('none');
+  });
+
+  setActive('none');
+}
+
+function initMissionDiscovery() {
+  const abstracts = Array.from(document.querySelectorAll('.mission-abstract'));
+  if (!abstracts.length) return;
+
+  const setupOne = (abstract) => {
+    if (abstract.dataset.discoveryBound === '1') return;
+    abstract.dataset.discoveryBound = '1';
+    const beam = abstract.querySelector('.beam');
+    if (!beam) return;
+
+    const specs = [
+      { rail: 1, color: 'green' }, { rail: 1, color: 'blue' }, { rail: 1, color: 'green' }, { rail: 1, color: 'green' },
+      { rail: 2, color: 'green' }, { rail: 2, color: 'blue' },
+      { rail: 3, color: 'green' }, { rail: 3, color: 'blue' },
+      { rail: 3, color: 'green' }, { rail: 3, color: 'blue' },
+    ];
+    const railsY = { 1: 26, 2: 46, 3: 66 };
+    const byRail = { 1: [], 2: [], 3: [] };
+    specs.forEach((s, idx) => byRail[s.rail].push({ ...s, idx }));
+    const markers = [];
+
+    specs.forEach((spec) => {
+      const m = document.createElement('span');
+      m.className = `trace-marker ${spec.color}`;
+      m.dataset.rail = String(spec.rail);
+      abstract.appendChild(m);
+      markers.push(m);
+    });
+
+    const LAYOUT_VARIANTS = [
+      { r1: [0.09, 0.36, 0.51, 0.67], r2: [0.26, 0.44], r3: [0.18, 0.45, 0.60, 0.74] },
+      { r1: [0.12, 0.40, 0.56, 0.70], r2: [0.30, 0.48], r3: [0.22, 0.43, 0.57, 0.71] },
+      { r1: [0.08, 0.34, 0.47, 0.63], r2: [0.24, 0.42], r3: [0.16, 0.40, 0.54, 0.69] },
+      { r1: [0.11, 0.38, 0.53, 0.66], r2: [0.28, 0.46], r3: [0.20, 0.47, 0.62, 0.76] },
+    ];
+    let variantIdx = Number(abstract.dataset.variantIdx || Math.floor(Math.random() * LAYOUT_VARIANTS.length));
+    abstract.dataset.variantIdx = String(variantIdx);
+
+    let minX = 16;
+    let maxX = 220;
+    let halfBeam = 22;
+    let span = 200;
+    let beamX = minX;
+    let direction = 1; // 1 right, -1 left
+    let lastTs = performance.now();
+    const sweepMs = 2300;
+    let rafId = 0;
+    let visibleState = new Array(markers.length).fill(false);
+    let markerMeta = [];
+
+    const applyVisible = (i, visible) => {
+      if (visibleState[i] === visible) return;
+      visibleState[i] = visible;
+      markers[i].classList.toggle('is-visible', visible);
+    };
+
+    const applyVariant = (idx) => {
+      const variant = LAYOUT_VARIANTS[idx % LAYOUT_VARIANTS.length];
+      const w = Math.max(200, abstract.clientWidth);
+      minX = 16;
+      maxX = Math.max(minX + 60, w - 82);
+      span = maxX - minX;
+      halfBeam = Math.max(14, beam.offsetWidth / 2);
+
+      markerMeta = [];
+      [1, 2, 3].forEach((rail) => {
+        const items = byRail[rail];
+        if (!items.length) return;
+        const ratios = rail === 1 ? variant.r1 : rail === 2 ? variant.r2 : variant.r3;
+        const xs = items.map((_, idx) => {
+          const ratio = ratios[Math.min(idx, ratios.length - 1)];
+          return Math.max(minX + 10, Math.min(maxX - 10, minX + span * ratio));
+        });
+        items.forEach((it, localIdx) => {
+          const x = xs[localIdx] || (minX + 24 + (localIdx * 18));
+          const markerEl = markers[it.idx];
+          markerEl.style.left = `${x}px`;
+          markerEl.style.top = `${railsY[rail]}px`;
+          markerMeta[it.idx] = { x, rail };
+        });
+      });
+
+      /* Keep the right-most bottom blue marker slightly left so it's visible longer */
+      const bottomBlue = specs
+        .map((s, i) => ({ ...s, idx: i }))
+        .filter(s => s.rail === 3 && s.color === 'blue')
+        .map(s => s.idx)
+        .filter(i => markerMeta[i]);
+      if (bottomBlue.length) {
+        let rightMostIdx = bottomBlue[0];
+        bottomBlue.forEach((i) => {
+          if (markerMeta[i].x > markerMeta[rightMostIdx].x) rightMostIdx = i;
+        });
+        markerMeta[rightMostIdx].x = Math.max(minX + 20, markerMeta[rightMostIdx].x - 18);
+        markers[rightMostIdx].style.left = `${markerMeta[rightMostIdx].x}px`;
+      }
+
+      /* User-directed layout tweak:
+         place the right-side clusters so their first marker sits near the arrow tip,
+         then spread remaining markers to the right. */
+      const placeRightMostCluster = (rail, count, startRatio, stepRatio) => {
+        const idxs = markerMeta
+          .map((m, i) => ({ m, i }))
+          .filter(({ m }) => m && m.rail === rail)
+          .sort((a, b) => b.m.x - a.m.x)
+          .slice(0, count)
+          .map(({ i }) => i)
+          .sort((a, b) => markerMeta[a].x - markerMeta[b].x); /* left->right */
+
+        idxs.forEach((idx, order) => {
+          const target = minX + span * (startRatio + stepRatio * order);
+          markerMeta[idx].x = Math.max(minX + 10, Math.min(maxX - 10, target));
+          markers[idx].style.left = `${markerMeta[idx].x}px`;
+        });
+      };
+      placeRightMostCluster(1, 3, 0.40, 0.10); /* top: tip-aligned cluster */
+      placeRightMostCluster(3, 2, 0.49, 0.13); /* bottom: tip-aligned cluster */
+
+      /* De-uniform pass:
+         deterministic per-variant offsets so markers don't stack vertically. */
+      const clampX = (x) => Math.max(minX + 10, Math.min(maxX - 10, x));
+      const variantOffsets = [
+        [0, -3, 4, -2, 2, -4, 3, -1, 2, -3],
+        [2, -2, 3, -4, 1, -3, 4, -2, 3, -1],
+        [-2, 4, -3, 2, -1, 3, -4, 2, -2, 1],
+        [3, -1, 2, -3, 4, -2, 1, -4, 2, -1],
+      ];
+      const offsets = variantOffsets[idx % variantOffsets.length] || variantOffsets[0];
+      for (let i = 0; i < markerMeta.length; i += 1) {
+        if (!markerMeta[i]) continue;
+        markerMeta[i].x = clampX(markerMeta[i].x + (offsets[i] || 0));
+      }
+
+      /* Strict non-overlap enforcement on each rail */
+      const MIN_GAP = 10;
+      [1, 2, 3].forEach((rail) => {
+        const idxs = markerMeta
+          .map((m, i) => ({ m, i }))
+          .filter(({ m }) => m && m.rail === rail)
+          .sort((a, b) => a.m.x - b.m.x)
+          .map(({ i }) => i);
+        for (let j = 1; j < idxs.length; j += 1) {
+          const left = idxs[j - 1];
+          const right = idxs[j];
+          if (markerMeta[right].x - markerMeta[left].x < MIN_GAP) {
+            markerMeta[right].x = clampX(markerMeta[left].x + MIN_GAP);
+          }
+        }
+      });
+      const ALIGN_EPS = 11;
+      for (let a = 0; a < markerMeta.length; a += 1) {
+        if (!markerMeta[a]) continue;
+        for (let b = a + 1; b < markerMeta.length; b += 1) {
+          if (!markerMeta[b]) continue;
+          if (markerMeta[a].rail === markerMeta[b].rail) continue;
+          const dx = markerMeta[a].x - markerMeta[b].x;
+          if (Math.abs(dx) < ALIGN_EPS) {
+            const nudge = (ALIGN_EPS - Math.abs(dx) + 2);
+            markerMeta[b].x = clampX(markerMeta[b].x + (dx <= 0 ? nudge : -nudge));
+          }
+        }
+      }
+      for (let i = 0; i < markerMeta.length; i += 1) {
+        if (!markerMeta[i]) continue;
+        markers[i].style.left = `${markerMeta[i].x}px`;
+      }
+
+      /* Requested placement:
+         middle-line blue sits between top-line first green and first blue. */
+      const topGreen = markerMeta
+        .map((m, i) => ({ m, i }))
+        .filter(({ m, i }) => m && m.rail === 1 && specs[i].color === 'green')
+        .sort((a, b) => a.m.x - b.m.x)[0];
+      const topBlue = markerMeta
+        .map((m, i) => ({ m, i }))
+        .filter(({ m, i }) => m && m.rail === 1 && specs[i].color === 'blue')
+        .sort((a, b) => a.m.x - b.m.x)[0];
+      const midBlue = markerMeta
+        .map((m, i) => ({ m, i }))
+        .filter(({ m, i }) => m && m.rail === 2 && specs[i].color === 'blue')
+        .sort((a, b) => a.m.x - b.m.x)[0];
+      if (topGreen && topBlue && midBlue) {
+        const midpoint = (topGreen.m.x + topBlue.m.x) / 2;
+        const nudged = midpoint + 10;
+        const target = clampX(Math.min(topBlue.m.x - 8, nudged));
+        markerMeta[midBlue.i].x = target;
+        markers[midBlue.i].style.left = `${target}px`;
+      }
+
+      /* Final guard: enforce non-overlap again after targeted tweaks */
+      const enforceRailSpacing = (rail, gap) => {
+        const idxs = markerMeta
+          .map((m, i) => ({ m, i }))
+          .filter(({ m }) => m && m.rail === rail)
+          .sort((a, b) => a.m.x - b.m.x)
+          .map(({ i }) => i);
+        for (let j = 1; j < idxs.length; j += 1) {
+          const left = idxs[j - 1];
+          const right = idxs[j];
+          if (markerMeta[right].x - markerMeta[left].x < gap) {
+            markerMeta[right].x = clampX(markerMeta[left].x + gap);
+          }
+        }
+        idxs.forEach((idx) => {
+          markers[idx].style.left = `${markerMeta[idx].x}px`;
+        });
+      };
+      enforceRailSpacing(2, 14);
+      enforceRailSpacing(3, 12);
+    };
+
+    const layout = () => {
+      applyVariant(variantIdx);
+
+      beamX = minX;
+      beam.style.left = `${beamX - halfBeam}px`;
+      beam.style.opacity = '.32';
+      visibleState = new Array(markers.length).fill(false);
+      markers.forEach(m => m.classList.remove('is-visible'));
+    };
+
+    const tick = (ts) => {
+      const dt = Math.min(34, ts - lastTs);
+      lastTs = ts;
+      const pxPerMs = span / sweepMs;
+      beamX += direction * pxPerMs * dt;
+
+      if (direction > 0 && beamX >= maxX) {
+        beamX = maxX;
+        direction = -1;
+      } else if (direction < 0 && beamX <= minX) {
+        beamX = minX;
+        direction = 1;
+        /* On each new scan pass, rotate to next one of 4 layouts */
+        variantIdx = (variantIdx + 1) % LAYOUT_VARIANTS.length;
+        abstract.dataset.variantIdx = String(variantIdx);
+        applyVariant(variantIdx);
+        visibleState = new Array(markers.length).fill(false);
+        markers.forEach(m => m.classList.remove('is-visible'));
+      }
+
+      beam.style.left = `${beamX - halfBeam}px`;
+      beam.style.opacity = direction > 0 ? '.88' : '.66';
+
+      for (let i = 0; i < markerMeta.length; i += 1) {
+        const info = markerMeta[i];
+        if (!info) continue;
+        if (direction > 0) {
+          if (beamX >= info.x) applyVisible(i, true);
+        } else if (beamX <= info.x) {
+          applyVisible(i, false);
+        }
+      }
+
+      rafId = requestAnimationFrame(tick);
+    };
+
+    layout();
+    rafId = requestAnimationFrame(tick);
+
+    const onResize = () => layout();
+    window.addEventListener('resize', onResize, { passive: true });
+    abstract.dataset.discoveryCleanup = '1';
+    abstract._discoveryCleanup = () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', onResize);
+    };
+  };
+
+  abstracts.forEach(setupOne);
+}
+
+
+/* ════════════════════════════════════════════
+   4. SITE INIT
+════════════════════════════════════════════ */
+function initSite() {
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: .12 });
+
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  initAudienceTabs();
+  initViewNavigation();
+  initMissionVisionPanels();
+  initMissionDiscovery();
+  initFlowValueHoverPause();
+  initMbsSplitFlap();
+  initProductsHoneycombLights();
+  initNavEmblemTrace();
+  initTileArrowPixels();
+}
+
+function initNavEmblemTrace() {
+  const svg = document.getElementById('nav-emblem-svg');
+  const dot = document.getElementById('nav-emblem-dot');
+  if (!svg || !dot || svg.dataset.ready === '1') return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  svg.dataset.ready = '1';
+
+  const points = [
+    { x: 658, y: 58 },   // top of right vertical
+    { x: 658, y: 205 },  // right top junction
+    { x: 391, y: 58 },   // top apex
+    { x: 125, y: 205 },  // left top junction
+    { x: 391, y: 352 },  // center junction
+    { x: 658, y: 205 },  // right top junction
+    { x: 535, y: 271 },  // right inner elbow
+    { x: 391, y: 271 },  // block top-left
+    { x: 658, y: 271 },  // block top-right
+    { x: 658, y: 604 },  // block bottom-right
+    { x: 391, y: 604 },  // block bottom-left
+    { x: 391, y: 603 },  // center stem bottom
+    { x: 273, y: 529 },  // left lower elbow
+    { x: 125, y: 205 },  // left top junction
+    { x: 391, y: 352 },  // center junction
+    { x: 391, y: 603 }   // bottom point
+  ];
+
+  const pulseClasses = ['pulse-blue', 'pulse-green', 'pulse-white'];
+  let pulseIdx = 0;
+  let cornerHits = 0;
+  let stepIdx = 0;
+  let activeToken = 0;
+
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  const setDot = (p) => {
+    dot.setAttribute('cx', String(p.x));
+    dot.setAttribute('cy', String(p.y));
+  };
+
+  const travel = (from, to, ms) => new Promise(resolve => {
+    const t0 = performance.now();
+    const frame = (now) => {
+      const t = Math.min(1, (now - t0) / ms);
+      const x = from.x + ((to.x - from.x) * t);
+      const y = from.y + ((to.y - from.y) * t);
+      dot.setAttribute('cx', x.toFixed(2));
+      dot.setAttribute('cy', y.toFixed(2));
+      if (t < 1) requestAnimationFrame(frame);
+      else resolve();
+    };
+    requestAnimationFrame(frame);
+  });
+
+  const triggerPulse = async () => {
+    const cls = pulseClasses[pulseIdx % pulseClasses.length];
+    pulseIdx += 1;
+    svg.classList.add('is-dashed', cls);
+    await sleep(880);
+    svg.classList.remove(cls, 'is-dashed');
+  };
+
+  const run = async (token) => {
+    setDot(points[0]);
+    while (activeToken === token) {
+      const from = points[stepIdx];
+      const to = points[(stepIdx + 1) % points.length];
+      const segDx = Math.abs(to.x - from.x);
+      const segDy = Math.abs(to.y - from.y);
+      const segMs = 180 + Math.round((segDx + segDy) * 3.1);
+      await travel(from, to, segMs);
+      stepIdx = (stepIdx + 1) % points.length;
+      cornerHits += 1;
+      if (cornerHits % 6 === 0) await triggerPulse();
+      await sleep(70);
+    }
+  };
+
+  activeToken += 1;
+  run(activeToken);
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      activeToken += 1;
+      svg.classList.remove('pulse-blue', 'pulse-green', 'pulse-white', 'is-dashed');
+    } else {
+      activeToken += 1;
+      run(activeToken);
+    }
+  }, { passive: true });
+}
+
+function initAudienceTabs() {
+  const tabs = Array.from(document.querySelectorAll('[data-audience-tab]'));
+  const panels = Array.from(document.querySelectorAll('[data-audience-panel]'));
+  if (!tabs.length || !panels.length) return;
+  const setActive = (key) => {
+    tabs.forEach(tab => tab.classList.toggle('active', tab.dataset.audienceTab === key));
+    panels.forEach(panel => panel.classList.toggle('active', panel.dataset.audiencePanel === key));
+  };
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => setActive(tab.dataset.audienceTab));
+  });
+}
+
+function initFlowValueHoverPause() {
+  const flowWrap = document.querySelector('#prod-mission .flow-wrap');
+  const lane = flowWrap ? flowWrap.querySelector('.flow-lane') : null;
+  const token = lane ? lane.querySelector('.flow-token') : null;
+  const steps = Array.from(document.querySelectorAll('#prod-mission .flow-step'));
+  if (!flowWrap || !lane || !token || !steps.length) return;
+
+  const syncStops = () => {
+    const laneRect = lane.getBoundingClientRect();
+    const labels = steps.map(step => step.querySelector('b')).filter(Boolean);
+    if (labels.length < 4 || laneRect.width <= 0) return;
+    labels.slice(0, 4).forEach((label, idx) => {
+      const r = label.getBoundingClientRect();
+      const centerX = r.left + (r.width / 2) - laneRect.left;
+      const pct = Math.max(0, Math.min(100, (centerX / laneRect.width) * 100));
+      flowWrap.style.setProperty(`--s${idx + 1}`, `${pct}%`);
+      steps[idx].dataset.stopPct = `${pct}`;
+    });
+  };
+
+  syncStops();
+  window.addEventListener('resize', syncStops, { passive: true });
+
+  const getStop = (idx) => Number(steps[idx]?.dataset.stopPct || 0);
+  const setAt = (pct, green, moveMs, opacity = 1) => {
+    token.style.transitionDuration = `${moveMs}ms`;
+    token.style.left = `calc(${pct}% - 5px)`;
+    token.style.opacity = `${opacity}`;
+    token.classList.toggle('is-green', green);
+  };
+  const setAtExpr = (leftExpr, green, moveMs, opacity = 1) => {
+    token.style.transitionDuration = `${moveMs}ms`;
+    token.style.left = leftExpr;
+    token.style.opacity = `${opacity}`;
+    token.classList.toggle('is-green', green);
+  };
+  const sleep = (ms) => new Promise(res => setTimeout(res, ms));
+  const waitInterruptible = async (ms, isInterrupted) => {
+    let elapsed = 0;
+    while (elapsed < ms) {
+      if (isInterrupted()) return false;
+      const step = Math.min(40, ms - elapsed);
+      await sleep(step);
+      elapsed += step;
+    }
+    return true;
+  };
+
+  let hoverIdx = -1;
+  let currentIdx = 0;
+  let running = true;
+  const HOLD_MS = 760;
+  const MOVE_MS = 620;
+  const RESET_FADE_MS = 120;
+  const REENTRY_MS = 260;
+  const ORDER = [0, 1, 2, 3];
+
+  steps.forEach((step, idx) => {
+    const lock = () => { hoverIdx = idx; };
+    const unlock = () => { if (hoverIdx === idx) hoverIdx = -1; };
+    step.addEventListener('mouseenter', lock);
+    step.addEventListener('mouseleave', unlock);
+    step.addEventListener('focusin', lock);
+    step.addEventListener('focusout', unlock);
+  });
+
+  (async () => {
+    setAt(getStop(currentIdx), true, 0);
+    while (running) {
+      if (hoverIdx >= 0) {
+        setAt(getStop(hoverIdx), true, 180);
+        await waitInterruptible(80, () => hoverIdx < 0);
+        continue;
+      }
+      setAt(getStop(currentIdx), true, 0);
+      const held = await waitInterruptible(HOLD_MS, () => hoverIdx >= 0);
+      if (!held) continue;
+      if (currentIdx === ORDER[ORDER.length - 1]) {
+        /* circulate: hit exact right edge, fade out, respawn at exact left edge */
+        setAtExpr('calc(100% - 10px)', false, MOVE_MS, 1);
+        const movedOff = await waitInterruptible(MOVE_MS, () => hoverIdx >= 0);
+        if (!movedOff) continue;
+        setAtExpr('calc(100% - 10px)', false, RESET_FADE_MS, 0);
+        const faded = await waitInterruptible(RESET_FADE_MS, () => hoverIdx >= 0);
+        if (!faded) continue;
+        currentIdx = ORDER[0];
+        setAtExpr('0px', false, 0, 0);
+        const respawned = await waitInterruptible(20, () => hoverIdx >= 0);
+        if (!respawned) continue;
+        setAtExpr('0px', false, REENTRY_MS, 1);
+        const visible = await waitInterruptible(REENTRY_MS, () => hoverIdx >= 0);
+        if (!visible) continue;
+        setAt(getStop(currentIdx), false, MOVE_MS, 1);
+        const movedIn = await waitInterruptible(MOVE_MS, () => hoverIdx >= 0);
+        if (!movedIn) continue;
+      } else {
+        const nextIdx = ORDER[ORDER.indexOf(currentIdx) + 1];
+        setAt(getStop(nextIdx), false, MOVE_MS);
+        const moved = await waitInterruptible(MOVE_MS, () => hoverIdx >= 0);
+        if (!moved) continue;
+        currentIdx = nextIdx;
+      }
+    }
+  })();
+}
+
+function initMbsSplitFlap() {
+  const cube = document.getElementById('mbs-cube');
+  const wrap1 = document.getElementById('mbs-flap-1');
+  const wrap2 = document.getElementById('mbs-flap-2');
+  const sub1 = document.getElementById('mbs-sub-1');
+  const sub2 = document.getElementById('mbs-sub-2');
+  const trigger = document.getElementById('friction');
+  if (!cube || !wrap1 || !wrap2 || !sub1 || !sub2 || !trigger) return;
+  if (cube.dataset.started === '1') return;
+
+  const sequence = [
+    { value: '$11,000,000,000,000', label: 'Total Outstanding MBS Market Size' },
+    { value: '$17,100,000,000,000', label: 'Total US Real-Estate Net equity' },
+    { value: '$16,800,000,000', label: "Annual Title Premiums + Additional Fee's" },
+  ];
+  const digits = '0123456789';
+
+  const runFlapTo = (wrap, value) => new Promise((resolve) => {
+    const chars = value.split('');
+    wrap.innerHTML = '';
+    chars.forEach((ch) => {
+      const cell = document.createElement('span');
+      cell.className = 'flap-char';
+      cell.textContent = ch === '$' ? '$' : (/\d/.test(ch) ? '0' : ch);
+      wrap.appendChild(cell);
+    });
+    const cells = Array.from(wrap.children);
+    let pending = 0;
+    chars.forEach((target, idx) => {
+      const cell = cells[idx];
+      if (!cell) return;
+      if (!/\d/.test(target)) {
+        cell.textContent = target;
+        return;
+      }
+      pending++;
+      const rtlIndex = (chars.length - 1) - idx; /* rightmost starts first */
+      const startDelay = rtlIndex * 62;
+      setTimeout(() => {
+        let ticks = 0;
+        const maxTicks = 11 + ((chars.length - 1 - rtlIndex) * 2);
+        const timer = setInterval(() => {
+          if (ticks >= maxTicks) {
+            clearInterval(timer);
+            cell.textContent = target;
+            pending--;
+            if (pending === 0) resolve();
+            return;
+          }
+          cell.textContent = digits[Math.floor(Math.random() * digits.length)];
+          cell.classList.remove('is-flipping');
+          void cell.offsetWidth;
+          cell.classList.add('is-flipping');
+          ticks++;
+        }, 44);
+      }, startDelay);
+    });
+    if (pending === 0) resolve();
+  });
+
+  const start = () => {
+    if (cube.dataset.started === '1') return;
+    cube.dataset.started = '1';
+    (async () => {
+      sub1.textContent = sequence[0].label;
+      await runFlapTo(wrap1, sequence[0].value);
+
+      let showingBottom = false;
+      let seqIndex = 0;
+      const wait = (ms) => new Promise((res) => setTimeout(res, ms));
+      const rotateLoop = async () => {
+        while (true) {
+          await wait(4200);
+          seqIndex = (seqIndex + 1) % sequence.length;
+          const metric = sequence[seqIndex];
+          if (showingBottom) {
+            cube.classList.remove('is-rotated');
+            await wait(820);
+            sub1.textContent = metric.label;
+            await runFlapTo(wrap1, metric.value);
+          } else {
+            cube.classList.add('is-rotated');
+            await wait(820);
+            sub2.textContent = metric.label;
+            await runFlapTo(wrap2, metric.value);
+          }
+          showingBottom = !showingBottom;
+        }
+      };
+      rotateLoop();
+    })();
+  };
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        start();
+        io.disconnect();
+      }
+    });
+  }, { threshold: 0.25 });
+  io.observe(trigger);
+}
+
+function initTileArrowPixels() {
+  const arrows = Array.from(document.querySelectorAll('.tile-arrow'));
+  if (!arrows.length) return;
+
+  arrows.forEach(arrow => {
+    if (!arrow.querySelector('.pixel-overlay')) {
+      const overlay = document.createElement('span');
+      overlay.className = 'pixel-overlay';
+      const cols = 14;
+      const rows = 4;
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          const px = document.createElement('span');
+          px.className = 'px';
+          px.style.left = `${(x / (cols - 1)) * 100}%`;
+          px.style.top = `${(y / (rows - 1)) * 100}%`;
+          overlay.appendChild(px);
+        }
+      }
+      arrow.appendChild(overlay);
+    }
+
+    const pixels = Array.from(arrow.querySelectorAll('.px'));
+    const randomize = () => {
+      pixels.forEach(px => {
+        px.style.setProperty('--pl', `${Math.floor(Math.random() * 220)}ms`);
+        px.style.setProperty('--pd', `${360 + Math.floor(Math.random() * 220)}ms`);
+      });
+    };
+
+    const burstOut = () => {
+      randomize();
+      arrow.classList.remove('px-burst-in');
+      arrow.classList.remove('px-burst-out');
+      void arrow.offsetWidth;
+      arrow.classList.add('px-burst-out');
+      setTimeout(() => arrow.classList.remove('px-burst-out'), 1150);
+    };
+    const burstIn = () => {
+      randomize();
+      arrow.classList.remove('px-burst-out');
+      arrow.classList.remove('px-burst-in');
+      void arrow.offsetWidth;
+      arrow.classList.add('px-burst-in');
+      setTimeout(() => arrow.classList.remove('px-burst-in'), 1150);
+    };
+
+    const tile = arrow.closest('.product-node');
+    if (!tile) return;
+    tile.addEventListener('mouseenter', burstOut);
+    tile.addEventListener('mouseleave', burstIn);
+  });
+}
+
+function initProductsHoneycombLights() {
+  const hero = document.querySelector('#products-view .products-honeycomb-bg');
+  const layer = hero ? hero.querySelector('.products-honeycomb-lights') : null;
+  if (!hero || !layer || layer.dataset.ready === '1') return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  layer.dataset.ready = '1';
+
+  let cells = [];
+  const byKey = new Map();
+  const colors = ['c-blue', 'c-green', 'c-white'];
+  let tracer = null;
+  let loopToken = 0;
+  let current = null;
+  let previous = null;
+  let currentColor = 'c-blue';
+  let resizeTimer = 0;
+
+  const ensureTracer = () => {
+    if (tracer) return tracer;
+    tracer = document.createElement('span');
+    tracer.className = 'cube-trace-dot c-blue';
+    layer.appendChild(tracer);
+    return tracer;
+  };
+
+  const setTracerColor = (colorClass) => {
+    const t = ensureTracer();
+    t.classList.remove('c-blue', 'c-green', 'c-white');
+    t.classList.add(colorClass);
+  };
+
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const moveTo = (x, y, ms) => {
+    const t = ensureTracer();
+    return new Promise((resolve) => {
+      t.style.transition = `left ${ms}ms linear, top ${ms}ms linear, opacity .18s ease`;
+      t.style.left = `${x}px`;
+      t.style.top = `${y}px`;
+      window.setTimeout(resolve, ms);
+    });
+  };
+
+  const moveTracer = async (fromCell, toCell, fromColor, toColor) => {
+    if (!toCell) return;
+    const t = ensureTracer();
+    if (!fromCell) {
+      setTracerColor(toColor);
+      t.style.transition = 'none';
+      t.style.left = `${toCell.x}px`;
+      t.style.top = `${toCell.y}px`;
+      t.style.opacity = '.95';
+      return;
+    }
+
+    const dx = toCell.col - fromCell.col;
+    const dy = toCell.row - fromCell.row;
+    const points = [];
+    if (dx === 1 && dy === 0) {
+      points.push({ x: fromCell.x + 22, y: fromCell.y - 12 });
+      points.push({ x: toCell.x, y: toCell.y });
+    } else if (dx === -1 && dy === 0) {
+      points.push({ x: fromCell.x - 22, y: fromCell.y - 12 });
+      points.push({ x: toCell.x, y: toCell.y });
+    } else if (dx === 0 && dy === 1) {
+      const side = Math.random() < 0.5 ? -1 : 1;
+      points.push({ x: fromCell.x, y: fromCell.y + 24 });
+      points.push({ x: toCell.x + (22 * side), y: toCell.y - 12 });
+      points.push({ x: toCell.x, y: toCell.y });
+    } else if (dx === 0 && dy === -1) {
+      const side = Math.random() < 0.5 ? -1 : 1;
+      points.push({ x: fromCell.x + (22 * side), y: fromCell.y - 12 });
+      points.push({ x: fromCell.x, y: fromCell.y - 24 });
+      points.push({ x: toCell.x, y: toCell.y });
+    } else {
+      points.push({ x: toCell.x, y: toCell.y });
+    }
+
+    setTracerColor(fromColor);
+    t.style.transition = 'none';
+    t.style.left = `${fromCell.x}px`;
+    t.style.top = `${fromCell.y}px`;
+    t.style.opacity = '.95';
+    void t.offsetWidth;
+    for (let i = 0; i < points.length; i += 1) {
+      const p = points[i];
+      const ms = i === points.length - 1 ? 210 : 180;
+      await moveTo(p.x, p.y, ms);
+    }
+    setTracerColor(toColor);
+  };
+
+  const buildGrid = () => {
+    layer.innerHTML = '';
+    cells = [];
+    byKey.clear();
+    tracer = null;
+    current = null;
+    previous = null;
+
+    const bounds = hero.getBoundingClientRect();
+    const width = Math.max(320, Math.floor(bounds.width));
+    const height = Math.max(220, Math.floor(bounds.height));
+    const stepX = 44;
+    const stepY = 48;
+    const margin = 48;
+
+    let idx = 0;
+    let row = 0;
+    for (let y = margin; y < height - margin; y += stepY) {
+      let col = 0;
+      for (let x = margin; x < width - margin; x += stepX) {
+        const el = document.createElement('span');
+        el.className = 'hc-light';
+        el.innerHTML = '<svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><path d="M32 8 L54 20 L32 32 L10 20 Z M54 20 L44 44 L32 56 M10 20 L20 44 L32 56 M32 32 L32 56"></path></svg>';
+        el.style.left = `${x}px`;
+        el.style.top = `${y}px`;
+        layer.appendChild(el);
+        const cell = { idx, x, y, row, col, el };
+        cells.push(cell);
+        byKey.set(`${row},${col}`, cell);
+        idx += 1;
+        col += 1;
+      }
+      row += 1;
+    }
+  };
+
+  const activateCell = (cell, forcedColor = null) => {
+    if (!cell) return null;
+    const el = cell.el;
+    const weighted = ['c-blue', 'c-green', 'c-white', 'c-green'];
+    const color = forcedColor || weighted[Math.floor(Math.random() * weighted.length)];
+    const dur = 1220 + Math.floor(Math.random() * 280);
+    el.className = `hc-light ${color} is-on`;
+    el.style.setProperty('--dur', `${dur}ms`);
+    setTimeout(() => {
+      el.className = 'hc-light';
+    }, dur);
+    return color;
+  };
+
+  const manhattan = (a, b) => Math.abs(a.row - b.row) + Math.abs(a.col - b.col);
+
+  const pickFarTarget = (cell) => {
+    if (!cell || !cells.length) return null;
+    const minHop = 3;
+    const maxHop = 8;
+    let pool = cells.filter(c => c.idx !== cell.idx && manhattan(c, cell) >= minHop && manhattan(c, cell) <= maxHop);
+    if (!pool.length) pool = cells.filter(c => c.idx !== cell.idx && manhattan(c, cell) >= minHop);
+    if (!pool.length) return null;
+    return pool[Math.floor(Math.random() * pool.length)];
+  };
+
+  const buildPath = (fromCell, toCell) => {
+    if (!fromCell || !toCell) return [];
+    const path = [fromCell];
+    let r = fromCell.row;
+    let c = fromCell.col;
+    const moveColFirst = Math.random() < 0.5;
+    const stepCol = () => {
+      while (c !== toCell.col) {
+        c += c < toCell.col ? 1 : -1;
+        const next = byKey.get(`${r},${c}`);
+        if (!next) break;
+        path.push(next);
+      }
+    };
+    const stepRow = () => {
+      while (r !== toCell.row) {
+        r += r < toCell.row ? 1 : -1;
+        const next = byKey.get(`${r},${c}`);
+        if (!next) break;
+        path.push(next);
+      }
+    };
+    if (moveColFirst) {
+      stepCol();
+      stepRow();
+    } else {
+      stepRow();
+      stepCol();
+    }
+    return path[path.length - 1]?.idx === toCell.idx ? path : [fromCell, toCell];
+  };
+
+  const movePath = async (path, fromColor, toColor) => {
+    if (!path || path.length < 2) return;
+    for (let i = 1; i < path.length; i += 1) {
+      const isLast = i === path.length - 1;
+      await moveTracer(path[i - 1], path[i], fromColor, isLast ? toColor : fromColor);
+    }
+  };
+
+  const nextColor = (fromColor) => {
+    const options = colors.filter(c => c !== fromColor);
+    return options[Math.floor(Math.random() * options.length)];
+  };
+
+  const run = async (token) => {
+    if (!cells.length) return;
+    if (!current) {
+      current = cells[Math.floor(Math.random() * cells.length)];
+      currentColor = activateCell(current, colors[Math.floor(Math.random() * colors.length)]) || 'c-blue';
+      await moveTracer(null, current, currentColor, currentColor);
+      await sleep(320);
+    }
+    while (loopToken === token) {
+      const target = pickFarTarget(current);
+      if (!target) {
+        await sleep(400);
+        continue;
+      }
+      const incomingColor = nextColor(currentColor);
+      const path = buildPath(current, target);
+      await movePath(path, currentColor, incomingColor);
+      activateCell(target, incomingColor);
+      previous = current;
+      current = target;
+      currentColor = incomingColor;
+      await sleep(320);
+    }
+  };
+
+  buildGrid();
+  loopToken += 1;
+  run(loopToken);
+
+  window.addEventListener('resize', () => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => {
+      loopToken += 1;
+      buildGrid();
+      run(loopToken);
+    }, 180);
+  }, { passive: true });
+}
+
+
+/* ════════════════════════════════════════════
+   5. CONTACT FORM — no sound
+════════════════════════════════════════════ */
+function handleSubmit(e) {
+  e.preventDefault();
+  const toast = document.getElementById('toast');
+  toast.style.display = 'block';
+  setTimeout(() => { toast.style.display = 'none'; }, 4000);
+  e.target.reset();
+}
+</script>
+
+</body>
+</html>
