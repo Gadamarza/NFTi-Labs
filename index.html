@@ -993,8 +993,11 @@
       stroke-dasharray: 5 4;
       animation: nav-emblem-dash .72s steps(8, end) infinite;
     }
+    /* FIX 2026-10-09 (Rocky-Bot): the .block rect is a solid grey fill that only
+       exists as a waypoint for the trace dot. Showing it during a pulse painted a
+       grey box over the emblem, so it stays hidden. */
     .nav-emblem.is-dashed .block {
-      opacity: .85;
+      opacity: 0;
     }
     .nav-emblem.pulse-blue .wire, .nav-emblem.pulse-blue .trace-dot {
       stroke: #2DA8FF;
@@ -1011,6 +1014,15 @@
       fill: #FFFFFF;
       filter: drop-shadow(0 0 4px rgba(255,255,255,.42));
     }
+    /* Negative-space glow (Rocky-Bot 2026-10-09) */
+    .nav-emblem-base { transition: opacity .18s ease; }
+    .nav-emblem-wrap.is-glowing .nav-emblem-base { opacity: 0; }
+    .nav-emblem .knock { opacity: 0; fill: #7E908C; transition: opacity .18s ease, fill .22s ease, filter .22s ease; }
+    .nav-emblem.is-dashed .knock { opacity: 1; }
+    .nav-emblem.is-dashed .wire { opacity: 0; }
+    .nav-emblem.pulse-blue .knock  { fill: #2DA8FF; filter: drop-shadow(0 0 6px rgba(45,168,255,.6)); }
+    .nav-emblem.pulse-green .knock { fill: #39FF7A; filter: drop-shadow(0 0 6px rgba(57,255,122,.6)); }
+    .nav-emblem.pulse-white .knock { fill: #FFFFFF; filter: drop-shadow(0 0 6px rgba(255,255,255,.55)); }
     @keyframes nav-emblem-dash {
       from { stroke-dashoffset: 0; }
       to { stroke-dashoffset: -36; }
@@ -1510,7 +1522,7 @@
 <div id="cursor-block" aria-hidden="true"></div>
 
 <!-- Version watermark -->
-<div id="ver-badge"><span class="brand-lockup">NFTi L<span class="brand-abs">ABS</span></span> · v4.5</div>
+<div id="ver-badge"><span class="brand-lockup">NFTi L<span class="brand-abs">ABS</span></span> · v5.0.2</div>
 
 <!-- ══════════════════════════════════════════
      PRELOADER
@@ -1551,13 +1563,20 @@
         <span class="nav-emblem-wrap" aria-hidden="true">
           <img class="nav-emblem-base" src="NFTi Emblem.png" alt="">
           <svg id="nav-emblem-svg" class="nav-emblem" viewBox="0 0 796 627" focusable="false">
-            <path class="wire" d="M391 58 L658 205 L391 352 L125 205 Z"></path>
-            <line class="wire" x1="658" y1="58" x2="658" y2="205"></line>
-            <path class="wire" d="M125 205 L273 529 L391 604"></path>
-            <line class="wire" x1="391" y1="352" x2="391" y2="603"></line>
-            <line class="wire" x1="658" y1="205" x2="535" y2="271"></line>
-            <rect class="block" x="390" y="271" width="268" height="333"></rect>
-            <circle id="nav-emblem-dot" class="trace-dot" cx="658" cy="58" r="48"></circle>
+            <!-- FIX 2026-10-09 (Rocky-Bot): negative-space glow. On pulse the emblem image hides and a glowing
+                 cube silhouette appears with the emblem's lines cut out of it as empty space. -->
+            <defs>
+              <mask id="nav-emblem-knock" maskUnits="userSpaceOnUse" x="0" y="0" width="796" height="627">
+                <polygon points="391,28 652,171 509,530 391,600 274,530 127,171" fill="#fff"/>
+                <g fill="none" stroke="#000" stroke-width="30" stroke-linecap="square" stroke-linejoin="miter"><path d="M391 28 L652 171 L391 315 L127 171 Z"/><line x1="391" y1="315" x2="391" y2="600"/><path d="M127 171 L274 530 L391 600 L509 530 L652 171"/></g>
+              </mask>
+            </defs>
+            <rect class="knock" x="0" y="0" width="796" height="627" mask="url(#nav-emblem-knock)"></rect>
+            <!-- FIX 2026-10-09 (Rocky-Bot): wires re-measured from NFTi Emblem.png pixels so the overlay and trace dot sit exactly on the emblem lines -->
+            <path class="wire" d="M391 28 L652 171 L391 315 L127 171 Z"></path>
+            <line class="wire" x1="391" y1="315" x2="391" y2="600"></line>
+            <path class="wire" d="M127 171 L274 530 L391 600 L509 530 L652 171"></path>
+            <circle id="nav-emblem-dot" class="trace-dot" cx="652" cy="171" r="48"></circle>
           </svg>
         </span>
       </div>
@@ -1855,7 +1874,7 @@
       <div class="products-honeycomb-lights" aria-hidden="true"></div>
       <div class="max-w-7xl mx-auto px-6 py-24">
         <div class="reveal">
-          <span class="tag tag-sage">NFTi Product Suite · v4.5 Milestone</span>
+          <span class="tag tag-sage">NFTi Product Suite · v5.0.2 Milestone</span>
         </div>
         <h1 class="reveal font-grotesk font-bold text-white mt-8 leading-none"
             style="font-size: clamp(2.8rem, 7vw, 6.2rem); letter-spacing: -.02em;">
@@ -1999,7 +2018,7 @@
             Institutional PropTech &amp; FinTech infrastructure for a tokenized + agentic future.
           </p>
           <div class="mt-8 flex gap-4">
-            <a href="mailto:Adam.garza@silverhs.com"
+            <a href="mailto:agarza@nftilabs.com"
                class="w-9 h-9 border border-sage/30 flex items-center justify-center hover:border-sage transition-colors duration-200">
               <i data-lucide="mail" class="w-4 h-4 text-sage/60"></i>
             </a>
@@ -2047,8 +2066,8 @@
       <div class="border-t border-sage/10 pt-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="text-sage/30 text-xs font-mono tracking-wide">© 2024 <span class="brand-lockup">NFTi L<span class="brand-abs">ABS</span></span>. All rights reserved.</div>
         <div class="text-sage/30 text-xs font-mono tracking-wide">
-          <a href="mailto:Adam.garza@silverhs.com" class="hover:text-sage transition-colors duration-200">
-            Adam.garza@silverhs.com
+          <a href="mailto:agarza@nftilabs.com" class="hover:text-sage transition-colors duration-200">
+            agarza@nftilabs.com
           </a>
         </div>
       </div>
@@ -3250,22 +3269,19 @@ function initNavEmblemTrace() {
   svg.dataset.ready = '1';
 
   const points = [
-    { x: 658, y: 58 },   // top of right vertical
-    { x: 658, y: 205 },  // right top junction
-    { x: 391, y: 58 },   // top apex
-    { x: 125, y: 205 },  // left top junction
-    { x: 391, y: 352 },  // center junction
-    { x: 658, y: 205 },  // right top junction
-    { x: 535, y: 271 },  // right inner elbow
-    { x: 391, y: 271 },  // block top-left
-    { x: 658, y: 271 },  // block top-right
-    { x: 658, y: 604 },  // block bottom-right
-    { x: 391, y: 604 },  // block bottom-left
-    { x: 391, y: 603 },  // center stem bottom
-    { x: 273, y: 529 },  // left lower elbow
-    { x: 125, y: 205 },  // left top junction
-    { x: 391, y: 352 },  // center junction
-    { x: 391, y: 603 }   // bottom point
+    // FIX 2026-10-09 (Rocky-Bot): every hop now runs along a real emblem line
+    { x: 652, y: 171 },  // right corner
+    { x: 391, y: 28 },   // top apex
+    { x: 127, y: 171 },  // left corner
+    { x: 391, y: 315 },  // center junction
+    { x: 652, y: 171 },  // right corner
+    { x: 509, y: 530 },  // right lower elbow
+    { x: 391, y: 600 },  // bottom point
+    { x: 274, y: 530 },  // left lower elbow
+    { x: 127, y: 171 },  // left corner
+    { x: 391, y: 315 },  // center junction
+    { x: 391, y: 600 },  // bottom point
+    { x: 509, y: 530 }   // right lower elbow (loops back to right corner)
   ];
 
   const pulseClasses = ['pulse-blue', 'pulse-green', 'pulse-white'];
@@ -3297,9 +3313,12 @@ function initNavEmblemTrace() {
   const triggerPulse = async () => {
     const cls = pulseClasses[pulseIdx % pulseClasses.length];
     pulseIdx += 1;
+    const wrap = svg.parentElement;
     svg.classList.add('is-dashed', cls);
+    if (wrap) wrap.classList.add('is-glowing');
     await sleep(880);
     svg.classList.remove(cls, 'is-dashed');
+    if (wrap) wrap.classList.remove('is-glowing');
   };
 
   const run = async (token) => {
