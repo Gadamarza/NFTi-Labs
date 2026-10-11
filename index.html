@@ -2037,12 +2037,12 @@
           <span class="tag tag-sage mb-8 block">Request a Brief</span>
           <form onsubmit="handleSubmit(event)" class="space-y-8">
             <div class="grid grid-cols-2 gap-6">
-              <div><input type="text"  class="footer-input" placeholder="Full Name"     required /></div>
-              <div><input type="text"  class="footer-input" placeholder="Organization"          /></div>
+              <div><input type="text"  name="name" autocomplete="name" aria-label="Full Name" class="footer-input" placeholder="Full Name"     required /></div>
+              <div><input type="text"  name="organization" autocomplete="organization" aria-label="Organization" class="footer-input" placeholder="Organization"          /></div>
             </div>
-            <div><input type="email" class="footer-input" placeholder="Email Address"  required /></div>
+            <div><input type="email" name="email" autocomplete="email" aria-label="Email Address" class="footer-input" placeholder="Email Address"  required /></div>
             <div>
-              <select class="footer-input" style="appearance:none;">
+              <select name="interest" aria-label="Area of Interest" class="footer-input" style="appearance:none;">
                 <option value="" disabled selected style="background:#1C2120;">Area of Interest</option>
                 <option style="background:#1C2120;">Blockchain Integration</option>
                 <option style="background:#1C2120;">Blockchain Strategy</option>
@@ -2051,7 +2051,7 @@
               </select>
             </div>
             <div>
-              <textarea class="footer-input resize-none" rows="3"
+              <textarea name="message" aria-label="Project description" class="footer-input resize-none" rows="3"
                         placeholder="Brief description of your project or goal"></textarea>
             </div>
             <button type="submit"
@@ -2082,7 +2082,7 @@
             background:#7E908C;color:#1C2120;padding:1rem 1.5rem;
             font-family:'Space Grotesk',sans-serif;font-size:.8rem;
             letter-spacing:.08em;border-left:3px solid #1C2120;">
-  Brief submitted. We'll be in touch.
+  Opening your email app to send the brief…
 </div>
 
 
@@ -3872,10 +3872,21 @@ function initProductsHoneycombLights() {
 ════════════════════════════════════════════ */
 function handleSubmit(e) {
   e.preventDefault();
+  const f = e.target;
+  const v = (n) => ((f.elements[n] && f.elements[n].value) || '').trim();
+  const subject = 'Brief request: ' + (v('interest') || 'General Inquiry') + (v('organization') ? ' (' + v('organization') + ')' : '');
+  const body = [
+    'Name: ' + v('name'),
+    'Organization: ' + v('organization'),
+    'Email: ' + v('email'),
+    'Area of interest: ' + v('interest'),
+    '',
+    v('message')
+  ].join('\n');
   const toast = document.getElementById('toast');
   toast.style.display = 'block';
   setTimeout(() => { toast.style.display = 'none'; }, 4000);
-  e.target.reset();
+  window.location.href = 'mailto:agarza@nftilabs.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
 }
 </script>
 
