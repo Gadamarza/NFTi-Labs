@@ -3509,15 +3509,23 @@ function initMbsSplitFlap() {
   ];
   const digits = '0123456789';
 
-  const runFlapTo = (wrap, value) => new Promise((resolve) => {
-    const chars = value.split('');
+  /* Zeroed placeholder of the target's length (e.g. $00,000,...) so a face is never blank or stale. */
+  const fillPlaceholder = (wrap, value) => {
     wrap.innerHTML = '';
-    chars.forEach((ch) => {
+    value.split('').forEach((ch) => {
       const cell = document.createElement('span');
       cell.className = 'flap-char';
-      cell.textContent = ch === '$' ? '$' : (/\d/.test(ch) ? '0' : ch);
+      cell.textContent = /\d/.test(ch) ? '0' : ch;
       wrap.appendChild(cell);
     });
+    wrap.dataset.placeholder = value;
+  };
+
+  const runFlapTo = (wrap, value) => new Promise((resolve) => {
+    const chars = value.split('');
+    /* Reuse the placeholder already shown on this face; only rebuild if it doesn't match. */
+    if (wrap.dataset.placeholder !== value || wrap.children.length !== chars.length) fillPlaceholder(wrap, value);
+    delete wrap.dataset.placeholder;
     const cells = Array.from(wrap.children);
     let pending = 0;
     chars.forEach((target, idx) => {
