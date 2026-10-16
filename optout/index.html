@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Unsubscribe | NFTi Labs</title>
+<link rel="icon" href="/NFTi%20Emblem.png">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:'BDSans';src:url('/BDSans-Regular.ttf') format('truetype');}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#1C2120;color:#FFFFFF;font-family:'Space Grotesk',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.card{max-width:460px;width:100%;background:#232a29;border:1px solid #2f3836;border-radius:16px;padding:36px 30px;text-align:center}
+.card img{width:64px;height:64px;margin-bottom:14px}
+h1{font-family:'BDSans','Space Grotesk',sans-serif;font-weight:400;font-size:28px;margin-bottom:10px}
+p{color:#7E908C;line-height:1.55;font-size:15px;margin-bottom:18px}
+label{display:block;text-align:left;font-family:'JetBrains Mono',monospace;font-size:12px;color:#7E908C;margin:12px 0 6px}
+input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #2f3836;background:#1C2120;color:#fff;font-size:15px;font-family:inherit}
+input:focus{outline:2px solid #2DA8FF;border-color:transparent}
+button{margin-top:20px;width:100%;padding:13px;border:0;border-radius:10px;background:#2DA8FF;color:#1C2120;font-weight:600;font-size:16px;cursor:pointer;font-family:inherit}
+button:disabled{opacity:.6;cursor:wait}
+.done{display:none}.done .tick{color:#39FF7A;font-size:40px;margin-bottom:8px}
+.err{color:#ff8a8a;font-size:14px;margin-top:12px;display:none}
+a{color:#2DA8FF}
+</style>
+</head>
+<body>
+<div class="card">
+  <img src="/NFTi%20Emblem.png" alt="NFTi Labs">
+  <div id="formWrap">
+    <h1>Unsubscribe</h1>
+    <p>Confirm below and NFTi Labs will not email you again. No account or login needed.</p>
+    <form id="optout" action="https://formsubmit.co/agarza@nftilabs.com" method="POST">
+      <input type="hidden" name="_subject" value="NFTi Labs opt-out request">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+      <label for="business">Business</label>
+      <input id="business" name="business" type="text" placeholder="Business name">
+      <label for="email">Your email</label>
+      <input id="email" name="email" type="email" required placeholder="you@example.com">
+      <button type="submit" id="btn">Confirm unsubscribe</button>
+      <div class="err" id="err">Something went wrong. Please reply to the email with "unsubscribe" instead, or email <a href="mailto:agarza@nftilabs.com?subject=Unsubscribe">agarza@nftilabs.com</a>.</div>
+    </form>
+  </div>
+  <div class="done" id="done">
+    <div class="tick">&#10003;</div>
+    <h1>You're unsubscribed</h1>
+    <p>Thanks for letting us know. You won't receive any more emails from NFTi Labs. Sorry for the bother.</p>
+  </div>
+</div>
+<script>
+(function(){
+  var NAMES={emilios:"Emilio's Restaurante & Cantina",elios:"Elio's Hot Dogs & Mexican Food",poblano:"Tacos Y Cemitas El Poblano",griffland:"Griffland Village Cleaners",wheelers:"Chuck Wheeler's",muneca:"Muñeca Salon",villa:"Villa Pizza",vienna:"Vienna Hot Dogs & Snacks",johns:"John's Place",luckykat:"Lucky Kat Tat"};
+  var b=(new URLSearchParams(location.search).get('b')||'').toLowerCase().replace(/[^a-z0-9-]/g,'');
+  if(b){document.getElementById('business').value=NAMES[b]||b;}
+  var f=document.getElementById('optout');
+  f.addEventListener('submit',function(e){
+    e.preventDefault();
+    var btn=document.getElementById('btn');btn.disabled=true;btn.textContent='Sending...';
+    var data=Object.fromEntries(new FormData(f));data.slug=b||'(none)';
+    fetch('https://formsubmit.co/ajax/agarza@nftilabs.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(data)})
+      .then(function(r){if(!r.ok)throw 0;return r.json();})
+      .then(function(){document.getElementById('formWrap').style.display='none';document.getElementById('done').style.display='block';})
+      .catch(function(){btn.disabled=false;btn.textContent='Confirm unsubscribe';document.getElementById('err').style.display='block';});
+  });
+})();
+</script>
+</body>
+</html>
