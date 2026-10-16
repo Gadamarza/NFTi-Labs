@@ -3575,17 +3575,14 @@ function initMbsSplitFlap() {
           await wait(4200);
           seqIndex = (seqIndex + 1) % sequence.length;
           const metric = sequence[seqIndex];
-          if (showingBottom) {
-            cube.classList.remove('is-rotated');
-            await wait(820);
-            sub1.textContent = metric.label;
-            await runFlapTo(wrap1, metric.value);
-          } else {
-            cube.classList.add('is-rotated');
-            await wait(820);
-            sub2.textContent = metric.label;
-            await runFlapTo(wrap2, metric.value);
-          }
+          /* Prepare the incoming face BEFORE rotating, then flip digits once the rotation has finished. */
+          const inSub = showingBottom ? sub1 : sub2;
+          const inWrap = showingBottom ? wrap1 : wrap2;
+          inSub.textContent = metric.label;
+          fillPlaceholder(inWrap, metric.value);
+          cube.classList.toggle('is-rotated', !showingBottom);
+          await wait(820);
+          await runFlapTo(inWrap, metric.value);
           showingBottom = !showingBottom;
         }
       };
