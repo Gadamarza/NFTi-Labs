@@ -3927,6 +3927,7 @@ function handleSubmit(e) {
   var seen = false; try { seen = localStorage.getItem(KEY) === '1'; } catch (e) {}
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (seen || reduced) skip();
+  else if (btn) btn.hidden = false; /* static markup, revealed only while the intro plays */
 })();
 </script>
 </body>
